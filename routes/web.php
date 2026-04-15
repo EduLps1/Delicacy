@@ -1,23 +1,12 @@
 <?php
 
+declare(strict_types=1);
 
-require_once __DIR__ . '/../app/controllers/ReservaController.php';
+require_once __DIR__ . '/../app/controllers/MenuController.php';
 
-$controller = new ReservaController();
-
-$action = $_GET['action'] ?? 'listar';
-
-switch ($action) {
-
-    case 'criar':
-        $controller->criar();
-        break;
-
-    case 'cancelar':
-        $controller->cancelar();
-        break;
-
-    default:
-        $reservas = $controller->listar();
-        require __DIR__ . '/../app/views/listar.php';
-}
+return [
+    'GET' => [
+        '/api/health' => [MenuController::class, 'health'],
+        '/api/menu' => [MenuController::class, 'menu'],
+    ],
+];

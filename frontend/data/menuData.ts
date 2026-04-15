@@ -1,19 +1,18 @@
-export type Category =
-  | "Todos"
-  | "Pizzas"
-  | "Hambúrgueres"
-  | "Espetinhos"
-  | "Petiscos"
-  | "Sobremesas"
-  | "Bebidas";
+import dishPicanha from "@/assets/dish-picanha.jpg";
+import dishDrinks from "@/assets/dish-drinks.jpg";
+import dishDessert from "@/assets/dish-dessert.jpg";
+import dishAppetizer from "@/assets/dish-appetizer.jpg";
+import dishSalmon from "@/assets/dish-salmon.jpg";
+
+export type Category = "Todos" | "Pizzas" | "Hambúrgueres" | "Espetinhos" | "Petiscos" | "Sobremesas" | "Bebidas";
 
 export interface Dish {
   id: number;
   name: string;
   description: string;
   price: number;
-  category: Exclude<Category, "Todos">;
   image: string;
+  category: Exclude<Category, "Todos">;
   popular?: boolean;
 }
 
@@ -28,114 +27,147 @@ export const categories: Category[] = [
 ];
 
 export const categoryLabels: Record<Exclude<Category, "Todos">, string> = {
-  Pizzas: "Pizzas",
-  "Hambúrgueres": "Hambúrgueres",
-  Espetinhos: "Espetinhos",
-  Petiscos: "Petiscos",
-  Sobremesas: "Sobremesas",
-  Bebidas: "Bebidas",
+  Pizzas: "🍕 Nossas Pizzas",
+  "Hambúrgueres": "🍔 Hambúrgueres Artesanais",
+  Espetinhos: "🍢 Espetinhos na Brasa",
+  Petiscos: "🍟 Petiscos para Compartilhar",
+  Sobremesas: "🍫 Sobremesas Irresistíveis",
+  Bebidas: "🥤 Bebidas Refrescantes",
 };
-
-const img = (id: string) => `https://images.unsplash.com/${id}?w=640&q=80`;
 
 export const dishes: Dish[] = [
   {
     id: 1,
     name: "Pizza Margherita",
-    description: "Molho de tomate, mussarela de búfala, manjericão fresco e azeite extra virgem.",
+    description: "Molho de tomate, mussarela de búfala, manjericão fresco e azeite",
     price: 42.9,
+    image: dishPicanha,
     category: "Pizzas",
-    image: img("photo-1574071318508-1cdbab80d002"),
     popular: true,
   },
   {
     id: 2,
     name: "Pizza Calabresa",
-    description: "Calabresa artesanal, cebola roxa e orégano.",
-    price: 48.9,
+    description: "Calabresa fatiada, cebola roxa, azeitonas e orégano",
+    price: 38.9,
+    image: dishPicanha,
     category: "Pizzas",
-    image: img("photo-1513104890138-7c749659a591"),
   },
   {
     id: 3,
-    name: "Burger Clássico",
-    description: "Blend 180g, queijo cheddar, alface, tomate e molho da casa no pão brioche.",
-    price: 32.9,
-    category: "Hambúrgueres",
-    image: img("photo-1568901346375-23c9450c58cd"),
-    popular: true,
+    name: "Pizza Quatro Queijos",
+    description: "Mussarela, gorgonzola, parmesão e catupiry",
+    price: 45.9,
+    image: dishPicanha,
+    category: "Pizzas",
   },
   {
     id: 4,
-    name: "Burger BBQ",
-    description: "Blend 200g, bacon crocante, cebola caramelizada e barbecue defumado.",
-    price: 38.9,
+    name: "Smash Burger Clássico",
+    description: "Blend de carne, queijo cheddar, cebola caramelizada e molho especial",
+    price: 32.9,
+    image: dishSalmon,
     category: "Hambúrgueres",
-    image: img("photo-1553979459-b858f088f0b4"),
-  },
-  {
-    id: 5,
-    name: "Espeto de Carne",
-    description: "Cubos de contra filé grelhados com farofa crocante.",
-    price: 18.9,
-    category: "Espetinhos",
-    image: img("photo-1529692236671-f1f6cf9683ba"),
-  },
-  {
-    id: 6,
-    name: "Espeto de Frango",
-    description: "Peito de frango temperado com ervas e limão.",
-    price: 16.9,
-    category: "Espetinhos",
-    image: img("photo-1604908176997-125f25cc6f3d"),
-  },
-  {
-    id: 7,
-    name: "Batata Rústica",
-    description: "Batatas assadas com alecrim, páprica defumada e maionese da casa.",
-    price: 22.9,
-    category: "Petiscos",
-    image: img("photo-1573080496219-bb080dd4f877"),
-  },
-  {
-    id: 8,
-    name: "Anéis de Cebola",
-    description: "Empanados crocantes servidos com molho barbecue.",
-    price: 19.9,
-    category: "Petiscos",
-    image: img("photo-1639024471283-03518883512c"),
     popular: true,
   },
   {
+    id: 5,
+    name: "Burger Bacon Supreme",
+    description: "Duplo blend, bacon crocante, queijo e barbecue defumado",
+    price: 39.9,
+    image: dishSalmon,
+    category: "Hambúrgueres",
+  },
+  {
+    id: 6,
+    name: "Espetinho de Picanha",
+    description: "Picanha temperada na brasa com farofa e vinagrete",
+    price: 14.9,
+    image: dishPicanha,
+    category: "Espetinhos",
+    popular: true,
+  },
+  {
+    id: 7,
+    name: "Espetinho de Frango",
+    description: "Frango marinado com ervas e limão, grelhado na brasa",
+    price: 10.9,
+    image: dishPicanha,
+    category: "Espetinhos",
+  },
+  {
+    id: 8,
+    name: "Espetinho Misto",
+    description: "Carne, frango e linguiça com molho chimichurri",
+    price: 16.9,
+    image: dishPicanha,
+    category: "Espetinhos",
+  },
+  {
     id: 9,
-    name: "Brownie com Sorvete",
-    description: "Brownie de chocolate belga com sorvete de creme e calda quente.",
-    price: 24.9,
-    category: "Sobremesas",
-    image: img("photo-1606313564200-e75d5e30476c"),
+    name: "Coxinha Cremosa",
+    description: "Coxinha crocante recheada com frango desfiado e catupiry",
+    price: 8.9,
+    image: dishAppetizer,
+    category: "Petiscos",
+    popular: true,
   },
   {
     id: 10,
-    name: "Cheesecake de Frutas Vermelhas",
-    description: "Base crocante, creme suave e calda de frutas vermelhas.",
-    price: 26.9,
-    category: "Sobremesas",
-    image: img("photo-1533134242443-e4d8540b37ca"),
+    name: "Bolinho de Bacalhau",
+    description: "Bolinhos dourados de bacalhau com ervas finas",
+    price: 12.9,
+    image: dishAppetizer,
+    category: "Petiscos",
   },
   {
     id: 11,
-    name: "Limonada Siciliana",
-    description: "Limões sicilianos, hortelã fresca e pouco açúcar.",
-    price: 12.9,
-    category: "Bebidas",
-    image: img("photo-1621263764928-df1444c5e859"),
+    name: "Porção de Batata Frita",
+    description: "Batatas fritas crocantes com cheddar e bacon",
+    price: 24.9,
+    image: dishAppetizer,
+    category: "Petiscos",
   },
   {
     id: 12,
-    name: "Refrigerante Lata",
-    description: "350ml — sabores tradicionais.",
+    name: "Brigadeiro Gourmet",
+    description: "Brigadeiros artesanais sortidos com cobertura premium",
     price: 6.9,
+    image: dishDessert,
+    category: "Sobremesas",
+    popular: true,
+  },
+  {
+    id: 13,
+    name: "Petit Gâteau",
+    description: "Bolo de chocolate quente com sorvete de creme e calda",
+    price: 24.9,
+    image: dishDessert,
+    category: "Sobremesas",
+  },
+  {
+    id: 14,
+    name: "Suco Tropical",
+    description: "Mix de frutas tropicais: manga, maracujá e morango",
+    price: 14.9,
+    image: dishDrinks,
     category: "Bebidas",
-    image: img("photo-1622483767028-3f23f4497317"),
+    popular: true,
+  },
+  {
+    id: 15,
+    name: "Limonada Suíça",
+    description: "Limonada cremosa com leite condensado e hortelã",
+    price: 12.9,
+    image: dishDrinks,
+    category: "Bebidas",
+  },
+  {
+    id: 16,
+    name: "Refrigerante Artesanal",
+    description: "Refrigerante de gengibre com limão e especiarias",
+    price: 9.9,
+    image: dishDrinks,
+    category: "Bebidas",
   },
 ];

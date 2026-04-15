@@ -1,32 +1,33 @@
 <?php
 
+declare(strict_types=1);
 
-require_once __DIR__ . '/../models/ReservaModel.php';
+require_once __DIR__ . '/../models/MenuModel.php';
+require_once __DIR__ . '/../views/JsonView.php';
 
-class ReservaController
+final class MenuController
 {
+    private MenuModel $model;
 
-    private $model;
-
-    public function __construct()
+    public function __construct(?MenuModel $model = null)
     {
-        $this->model = new ReservaModel();
+        $this->model = $model ?? new MenuModel();
     }
 
-    public function criar()
+    public function menu(): void
     {
-        $this->model->criar($_POST);
-        header("Location: /?msg=criado");
+        JsonView::send([
+            'categories' => $this->model->getCategories(),
+            'categoryLabels' => $this->model->getCategoryLabels(),
+            'dishes' => $this->model->getDishes(),
+        ]);
     }
 
-    public function listar()
+    public function health(): void
     {
-        return $this->model->listar();
-    }
-
-    public function cancelar()
-    {
-        $this->model->cancelar($_GET['id']);
-        header("Location: /?msg=cancelado");
+        JsonView::send([
+            'status' => 'ok',
+            'service' => 'savour-stream-php',
+        ]);
     }
 }
