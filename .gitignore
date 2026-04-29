@@ -1,4 +1,27 @@
-/.idea
+# === Arquivos de Ambiente e Configuração Sensível ===
+# O .env contém credenciais do banco, chaves de API, etc.
+# NUNCA deve ser commitado no repositório.
+.env
 
+# === IDEs e Editores ===
+/.idea
+/.vscode
+*.swp
+*.swo
+*~
+
+# === Dependências ===
 node_modules
+vendor
+
+# === Build e Distribuição ===
 dist
+
+# === Logs e Temporários ===
+*.log
+/tmp
+/logs
+
+# === Sistema Operacional ===
+Thumbs.db
+.DS_Store
