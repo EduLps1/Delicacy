@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Erro 404 - Delicacy</title>
+
+<style>
+:root {
+  --vinho: #6A040F;
+  --vinho-escuro: #2B0208;
+  --vinho-medio: #8A2A33;
+  --dourado: #C6A969;
+
+  --branco: #FFFFFF;
+  --bege: #FFF6F2;
+}
+
+/* RESET */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* FUNDO */
+body {
+  height: 100vh;
+  background: linear-gradient(rgba(43,2,8,0.9), rgba(106,4,15,0.9)),
+              url('img/bg-delicacy.png');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* CARD */
+.container {
+  background: var(--bege);
+  padding: 50px;
+  border-radius: 20px;
+  text-align: center;
+  max-width: 500px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+}
+
+/* LOGO */
+.logo {
+  font-size: 40px;
+  color: var(--dourado);
+  margin-bottom: 10px;
+}
+
+/* ERRO */
+.code {
+  font-size: 80px;
+  font-weight: bold;
+  color: var(--vinho);
+}
+
+/* TEXTO */
+.message {
+  font-size: 18px;
+  margin: 15px 0;
+  color: #444;
+}
+
+/* BOTÃO */
+.btn {
+  margin-top: 20px;
+  display: inline-block;
+  padding: 12px 20px;
+  background: linear-gradient(to right, var(--vinho), var(--vinho-medio));
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: 0.3s;
+}
+
+.btn:hover {
+  opacity: 0.9;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+  <div class="logo">Delicacy</div>
+
+  <div class="code">404</div>
+
+  <div class="message">
+    Página não encontrada.<br>
+    O conteúdo que você procura não existe ou foi removido.
+  </div>
+
+  <a href="index.html" class="btn">Voltar para o início</a>
+</div>
+
+</body>
+</html>
