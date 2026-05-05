@@ -16,7 +16,14 @@
 
 body {
   height: 100vh;
-  background: linear-gradient(135deg, #2B0208, #6A040F, #8a2a33);
+
+  background: 
+    linear-gradient(rgba(43,2,8,0.6), rgba(106,4,15,0.6)),
+    url('../../public/img/background_delicacy.png');
+
+  background-size: cover;
+  background-position: center;
+
   display: flex;
   justify-content: center;
   align-items: center;
@@ -35,7 +42,14 @@ body {
 /* LADO ESQUERDO */
 .left {
   width: 50%;
-  background: linear-gradient(160deg, #6A040F, #3d030a, #2B0208);
+
+  background: 
+    linear-gradient(rgba(43,2,8,0.85), rgba(106,4,15,0.85)),
+    url('../../public/img/tecido.png');
+
+  background-size: cover;
+  background-position: center;
+
   color: #FFFFFF;
   display: flex;
   flex-direction: column;
@@ -46,17 +60,54 @@ body {
 /* LOGO */
 .left h1 {
   font-family: 'Playfair Display', serif;
-  font-size: 52px;
-  color: #C6A969;
-  margin-bottom: 15px;
+  font-size: 80px;
   letter-spacing: 1px;
-  text-shadow: 0 4px 15px rgba(0,0,0,0.5);
+
+
+  color: #D4AF37;
+
+  background: linear-gradient(180deg, #f5d27a, #c6a969, #a67c2d);
+
+  background-clip: text;
+  -webkit-background-clip: text;
+
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+
+  text-shadow:
+    0 2px 4px rgba(0,0,0,0.4),
+    0 6px 20px rgba(0,0,0,0.5);
+}
+
+.linha-decorativa {
+  width: 320px; 
+  height: 2px;
+  margin: 15px 0 25px 0;
+
+  background: linear-gradient(to right, transparent,  #8f7214, transparent);
+  position: relative;
+}
+
+.linha-decorativa::after {
+  content: "✦";
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #8f7214;
+  font-size: 18px;
 }
 
 .left p {
+  font-family: 'Playfair Display', serif;
   line-height: 1.6;
   opacity: 0.9;
   max-width: 320px;
+
+  color: #f5e6c8; 
+  opacity: 0.95;
+
+  max-width: 340px;
 }
 
 /* LADO DIREITO */
@@ -143,6 +194,7 @@ body {
   <!-- LEFT -->
   <div class="left">
     <h1>Delicacy</h1>
+    <div class="linha-decorativa"></div>
     <p>
       Leve sofisticação ao seu cardápio digital.
       Conecte sua empresa aos clientes com elegância e identidade.
