@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Página não encontrada | Delicacy</title>
+    <style>
+        :root {
+            --vinho: #6A040F;
+            --vinho-escuro: #2B0208;
+            --dourado: #C6A969;
+            --bege: #FFF6F2;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            height: 100vh;
+            background: linear-gradient(rgba(43,2,8,0.92), rgba(43,2,8,0.92)),
+                        url('img/bg-delicacy.png') center/cover no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            max-width: 1000px;
+            width: 90%;
+            background: rgba(255, 246, 242, 0.98);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        /* LADO ESQUERDO */
+        .left-side {
+            flex: 1;
+            background: linear-gradient(rgba(43,2,8,0.95), rgba(106,4,15,0.95));
+            padding: 80px 60px;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+
+        .logo {
+            font-size: 52px;
+            font-weight: 700;
+            color: var(--dourado);
+            margin-bottom: 16px;
+            letter-spacing: 3px;
+        }
+
+        .tagline {
+            font-size: 17px;
+            line-height: 1.5;
+            opacity: 0.95;
+            margin-bottom: 40px;
+        }
+
+        .illustration {
+            font-size: 140px;
+            position: absolute;
+            bottom: 60px;
+            right: 40px;
+            animation: float 3.5s ease-in-out infinite;
+            filter: drop-shadow(0 15px 25px rgba(0,0,0,0.4));
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(-8deg); }
+            50% { transform: translateY(-25px) rotate(8deg); }
+        }
+
+        /* LADO DIREITO - Erro */
+        .right-side {
+            flex: 1;
+            padding: 80px 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: center;
+            background: #fff;
+        }
+
+        .code {
+            font-size: 120px;
+            font-weight: 900;
+            color: var(--vinho);
+            line-height: 1;
+            margin-bottom: 10px;
+        }
+
+        .message {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--vinho-escuro);
+            margin-bottom: 12px;
+        }
+
+        .submessage {
+            font-size: 16.5px;
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 40px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 16px 42px;
+            background: linear-gradient(to right, var(--vinho), #9A1F2E);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-size: 17px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(106, 4, 15, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(106, 4, 15, 0.4);
+        }
+
+        .links {
+            margin-top: 45px;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .links a {
+            color: var(--vinho);
+            text-decoration: none;
+            font-size: 15px;
+        }
+
+        .links a:hover {
+            color: var(--dourado);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        
+        <!-- Lado Esquerdo -->
+        <div class="left-side">
+            <div class="logo">Delicacy</div>
+            <div class="tagline">
+                Leve sofisticação ao seu cardápio digital.<br>
+                Conecte sua empresa aos clientes com elegância e identidade.
+            </div>
+            <div class="illustration">🍷</div>
+        </div>
+
+        <!-- Lado Direito - 404 -->
+        <div class="right-side">
+            <div class="code">404</div>
+            <div class="message">Ops! Essa delícia não foi encontrada.</div>
+            <div class="submessage">
+                A página que você procura pode ter sido movida,<br>
+                deletada ou nunca ter existido.
+            </div>
+            
+            <a href="index.html" class="btn">← Voltar para o Início</a>
+
+            <div class="links">
+                <a href="#">Cardápio</a>
+                <a href="#">Contato</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 
