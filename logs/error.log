@@ -1,0 +1,149 @@
+[13-May-2026 03:16:51 America/Sao_Paulo] PHP Fatal error:  Uncaught Error: Class "AuthController" not found in C:\Users\eduul\OneDrive\Documentos\Delicacy\public\register.php:12
+Stack trace:
+#0 {main}
+  thrown in C:\Users\eduul\OneDrive\Documentos\Delicacy\public\register.php on line 12
+[13-May-2026 03:16:52 America/Sao_Paulo] PHP Fatal error:  Uncaught Error: Class "AuthController" not found in C:\Users\eduul\OneDrive\Documentos\Delicacy\public\register.php:12
+Stack trace:
+#0 {main}
+  thrown in C:\Users\eduul\OneDrive\Documentos\Delicacy\public\register.php on line 12
+[13-May-2026 03:16:57 America/Sao_Paulo] PHP Fatal error:  Uncaught Error: Class "AuthController" not found in C:\Users\eduul\OneDrive\Documentos\Delicacy\public\register.php:12
+Stack trace:
+#0 {main}
+  thrown in C:\Users\eduul\OneDrive\Documentos\Delicacy\public\register.php on line 12
+[13-May-2026 03:22:59 America/Sao_Paulo] PHP Parse error:  syntax error, unexpected token "echo", expecting "function" in C:\Users\eduul\OneDrive\Documentos\Delicacy\src\controllers\AuthController.php on line 82
+[13-May-2026 03:31:31 America/Sao_Paulo] PHP Fatal error:  Uncaught Error: Class "User" not found in C:\Users\eduul\OneDrive\Documentos\Delicacy\src\controllers\AuthController.php:15
+Stack trace:
+#0 C:\Users\eduul\OneDrive\Documentos\Delicacy\public\register.php(12): AuthController->__construct()
+#1 {main}
+  thrown in C:\Users\eduul\OneDrive\Documentos\Delicacy\src\controllers\AuthController.php on line 15
+[13-May-2026 03:31:34 America/Sao_Paulo] PHP Fatal error:  Uncaught Error: Class "User" not found in C:\Users\eduul\OneDrive\Documentos\Delicacy\src\controllers\AuthController.php:15
+Stack trace:
+#0 C:\Users\eduul\OneDrive\Documentos\Delicacy\public\register.php(12): AuthController->__construct()
+#1 {main}
+  thrown in C:\Users\eduul\OneDrive\Documentos\Delicacy\src\controllers\AuthController.php on line 15
+[13-May-2026 03:31:45 America/Sao_Paulo] PHP Fatal error:  Uncaught Error: Class "User" not found in C:\Users\eduul\OneDrive\Documentos\Delicacy\src\controllers\AuthController.php:15
+Stack trace:
+#0 C:\Users\eduul\OneDrive\Documentos\Delicacy\public\register.php(12): AuthController->__construct()
+#1 {main}
+  thrown in C:\Users\eduul\OneDrive\Documentos\Delicacy\src\controllers\AuthController.php on line 15
+[13-May-2026 03:31:45 America/Sao_Paulo] PHP Fatal error:  Uncaught Error: Class "User" not found in C:\Users\eduul\OneDrive\Documentos\Delicacy\src\controllers\AuthController.php:15
+Stack trace:
+#0 C:\Users\eduul\OneDrive\Documentos\Delicacy\public\register.php(12): AuthController->__construct()
+#1 {main}
+  thrown in C:\Users\eduul\OneDrive\Documentos\Delicacy\src\controllers\AuthController.php on line 15
+[13-May-2026 03:31:45 America/Sao_Paulo] PHP Fatal error:  Uncaught Error: Class "User" not found in C:\Users\eduul\OneDrive\Documentos\Delicacy\src\controllers\AuthController.php:15
+Stack trace:
+#0 C:\Users\eduul\OneDrive\Documentos\Delicacy\public\register.php(12): AuthController->__construct()
+#1 {main}
+  thrown in C:\Users\eduul\OneDrive\Documentos\Delicacy\src\controllers\AuthController.php on line 15
+[13-May-2026 03:32:39 America/Sao_Paulo] PHP Fatal error:  Uncaught Error: Class "User" not found in C:\Users\eduul\OneDrive\Documentos\Delicacy\src\controllers\AuthController.php:15
+Stack trace:
+#0 C:\Users\eduul\OneDrive\Documentos\Delicacy\public\register.php(12): AuthController->__construct()
+#1 {main}
+  thrown in C:\Users\eduul\OneDrive\Documentos\Delicacy\src\controllers\AuthController.php on line 15
+[13-May-2026 03:32:39 America/Sao_Paulo] PHP Fatal error:  Uncaught Error: Class "User" not found in C:\Users\eduul\OneDrive\Documentos\Delicacy\src\controllers\AuthController.php:15
+Stack trace:
+#0 C:\Users\eduul\OneDrive\Documentos\Delicacy\public\register.php(12): AuthController->__construct()
+#1 {main}
+  thrown in C:\Users\eduul\OneDrive\Documentos\Delicacy\src\controllers\AuthController.php on line 15
+[13-May-2026 03:32:40 America/Sao_Paulo] PHP Fatal error:  Uncaught Error: Class "User" not found in C:\Users\eduul\OneDrive\Documentos\Delicacy\src\controllers\AuthController.php:15
+Stack trace:
+#0 C:\Users\eduul\OneDrive\Documentos\Delicacy\public\register.php(12): AuthController->__construct()
+#1 {main}
+  thrown in C:\Users\eduul\OneDrive\Documentos\Delicacy\src\controllers\AuthController.php on line 15
+[13-May-2026 03:32:41 America/Sao_Paulo] PHP Fatal error:  Uncaught Error: Class "User" not found in C:\Users\eduul\OneDrive\Documentos\Delicacy\src\controllers\AuthController.php:15
+Stack trace:
+#0 C:\Users\eduul\OneDrive\Documentos\Delicacy\public\register.php(12): AuthController->__construct()
+#1 {main}
+  thrown in C:\Users\eduul\OneDrive\Documentos\Delicacy\src\controllers\AuthController.php on line 15
+[13-May-2026 03:32:41 America/Sao_Paulo] PHP Fatal error:  Uncaught Error: Class "User" not found in C:\Users\eduul\OneDrive\Documentos\Delicacy\src\controllers\AuthController.php:15
+Stack trace:
+#0 C:\Users\eduul\OneDrive\Documentos\Delicacy\public\register.php(12): AuthController->__construct()
+#1 {main}
+  thrown in C:\Users\eduul\OneDrive\Documentos\Delicacy\src\controllers\AuthController.php on line 15
+[13-May-2026 03:32:41 America/Sao_Paulo] PHP Fatal error:  Uncaught Error: Class "User" not found in C:\Users\eduul\OneDrive\Documentos\Delicacy\src\controllers\AuthController.php:15
+Stack trace:
+#0 C:\Users\eduul\OneDrive\Documentos\Delicacy\public\register.php(12): AuthController->__construct()
+#1 {main}
+  thrown in C:\Users\eduul\OneDrive\Documentos\Delicacy\src\controllers\AuthController.php on line 15
+[13-May-2026 03:36:17 America/Sao_Paulo] PHP Fatal error:  Uncaught Error: Class "User" not found in C:\Users\eduul\OneDrive\Documentos\Delicacy\src\controllers\AuthController.php:15
+Stack trace:
+#0 C:\Users\eduul\OneDrive\Documentos\Delicacy\public\register.php(12): AuthController->__construct()
+#1 {main}
+  thrown in C:\Users\eduul\OneDrive\Documentos\Delicacy\src\controllers\AuthController.php on line 15
+[13-May-2026 03:36:17 America/Sao_Paulo] PHP Fatal error:  Uncaught Error: Class "User" not found in C:\Users\eduul\OneDrive\Documentos\Delicacy\src\controllers\AuthController.php:15
+Stack trace:
+#0 C:\Users\eduul\OneDrive\Documentos\Delicacy\public\register.php(12): AuthController->__construct()
+#1 {main}
+  thrown in C:\Users\eduul\OneDrive\Documentos\Delicacy\src\controllers\AuthController.php on line 15
+[13-May-2026 03:36:17 America/Sao_Paulo] PHP Fatal error:  Uncaught Error: Class "User" not found in C:\Users\eduul\OneDrive\Documentos\Delicacy\src\controllers\AuthController.php:15
+Stack trace:
+#0 C:\Users\eduul\OneDrive\Documentos\Delicacy\public\register.php(12): AuthController->__construct()
+#1 {main}
+  thrown in C:\Users\eduul\OneDrive\Documentos\Delicacy\src\controllers\AuthController.php on line 15
+[13-May-2026 03:36:19 America/Sao_Paulo] PHP Fatal error:  Uncaught Error: Class "User" not found in C:\Users\eduul\OneDrive\Documentos\Delicacy\src\controllers\AuthController.php:15
+Stack trace:
+#0 C:\Users\eduul\OneDrive\Documentos\Delicacy\public\register.php(12): AuthController->__construct()
+#1 {main}
+  thrown in C:\Users\eduul\OneDrive\Documentos\Delicacy\src\controllers\AuthController.php on line 15
+[13-May-2026 03:36:24 America/Sao_Paulo] PHP Fatal error:  Uncaught Error: Class "User" not found in C:\Users\eduul\OneDrive\Documentos\Delicacy\src\controllers\AuthController.php:15
+Stack trace:
+#0 C:\Users\eduul\OneDrive\Documentos\Delicacy\public\register.php(12): AuthController->__construct()
+#1 {main}
+  thrown in C:\Users\eduul\OneDrive\Documentos\Delicacy\src\controllers\AuthController.php on line 15
+[13-May-2026 03:36:38 America/Sao_Paulo] PHP Fatal error:  Uncaught Error: Class "User" not found in C:\Users\eduul\OneDrive\Documentos\Delicacy\src\controllers\AuthController.php:15
+Stack trace:
+#0 C:\Users\eduul\OneDrive\Documentos\Delicacy\public\register.php(12): AuthController->__construct()
+#1 {main}
+  thrown in C:\Users\eduul\OneDrive\Documentos\Delicacy\src\controllers\AuthController.php on line 15
+[13-May-2026 03:46:26 America/Sao_Paulo] PHP Fatal error:  Uncaught Error: Call to undefined function generateCSRFToken() in C:\Users\eduul\OneDrive\Documentos\Delicacy\src\controllers\AuthController.php:22
+Stack trace:
+#0 C:\Users\eduul\OneDrive\Documentos\Delicacy\public\login.php(21): AuthController->showLoginForm()
+#1 {main}
+  thrown in C:\Users\eduul\OneDrive\Documentos\Delicacy\src\controllers\AuthController.php on line 22
+[13-May-2026 03:46:28 America/Sao_Paulo] PHP Fatal error:  Uncaught Error: Call to undefined function generateCSRFToken() in C:\Users\eduul\OneDrive\Documentos\Delicacy\src\controllers\AuthController.php:87
+Stack trace:
+#0 C:\Users\eduul\OneDrive\Documentos\Delicacy\public\register.php(21): AuthController->showRegisterForm()
+#1 {main}
+  thrown in C:\Users\eduul\OneDrive\Documentos\Delicacy\src\controllers\AuthController.php on line 87
+[13-May-2026 03:53:03 America/Sao_Paulo] PHP Fatal error:  Uncaught Error: Call to undefined function generateCSRFToken() in C:\Users\eduul\OneDrive\Documentos\Delicacy\src\controllers\AuthController.php:87
+Stack trace:
+#0 C:\Users\eduul\OneDrive\Documentos\Delicacy\public\register.php(21): AuthController->showRegisterForm()
+#1 {main}
+  thrown in C:\Users\eduul\OneDrive\Documentos\Delicacy\src\controllers\AuthController.php on line 87
+[13-May-2026 03:53:08 America/Sao_Paulo] PHP Fatal error:  Uncaught Error: Call to undefined function generateCSRFToken() in C:\Users\eduul\OneDrive\Documentos\Delicacy\src\controllers\AuthController.php:87
+Stack trace:
+#0 C:\Users\eduul\OneDrive\Documentos\Delicacy\public\register.php(21): AuthController->showRegisterForm()
+#1 {main}
+  thrown in C:\Users\eduul\OneDrive\Documentos\Delicacy\src\controllers\AuthController.php on line 87
+[13-May-2026 04:00:09 America/Sao_Paulo] PHP Warning:  require_once(C:\Users\eduul\OneDrive\Documentos\Delicacy/views/auth/login.php): Failed to open stream: No such file or directory in C:\Users\eduul\OneDrive\Documentos\Delicacy\src\controllers\AuthController.php on line 23
+[13-May-2026 04:00:09 America/Sao_Paulo] PHP Fatal error:  Uncaught Error: Failed opening required 'C:\Users\eduul\OneDrive\Documentos\Delicacy/views/auth/login.php' (include_path='.;C:\php\pear') in C:\Users\eduul\OneDrive\Documentos\Delicacy\src\controllers\AuthController.php:23
+Stack trace:
+#0 C:\Users\eduul\OneDrive\Documentos\Delicacy\public\login.php(21): AuthController->showLoginForm()
+#1 {main}
+  thrown in C:\Users\eduul\OneDrive\Documentos\Delicacy\src\controllers\AuthController.php on line 23
+[13-May-2026 04:00:13 America/Sao_Paulo] PHP Warning:  require_once(C:\Users\eduul\OneDrive\Documentos\Delicacy/views/auth/register.php): Failed to open stream: No such file or directory in C:\Users\eduul\OneDrive\Documentos\Delicacy\src\controllers\AuthController.php on line 88
+[13-May-2026 04:00:13 America/Sao_Paulo] PHP Fatal error:  Uncaught Error: Failed opening required 'C:\Users\eduul\OneDrive\Documentos\Delicacy/views/auth/register.php' (include_path='.;C:\php\pear') in C:\Users\eduul\OneDrive\Documentos\Delicacy\src\controllers\AuthController.php:88
+Stack trace:
+#0 C:\Users\eduul\OneDrive\Documentos\Delicacy\public\register.php(21): AuthController->showRegisterForm()
+#1 {main}
+  thrown in C:\Users\eduul\OneDrive\Documentos\Delicacy\src\controllers\AuthController.php on line 88
+[13-May-2026 04:00:41 America/Sao_Paulo] PHP Warning:  require_once(C:\Users\eduul\OneDrive\Documentos\Delicacy\src\views\auth/../config/config.php): Failed to open stream: No such file or directory in C:\Users\eduul\OneDrive\Documentos\Delicacy\src\views\auth\login.php on line 6
+[13-May-2026 04:00:41 America/Sao_Paulo] PHP Fatal error:  Uncaught Error: Failed opening required 'C:\Users\eduul\OneDrive\Documentos\Delicacy\src\views\auth/../config/config.php' (include_path='.;C:\php\pear') in C:\Users\eduul\OneDrive\Documentos\Delicacy\src\views\auth\login.php:6
+Stack trace:
+#0 C:\Users\eduul\OneDrive\Documentos\Delicacy\src\controllers\AuthController.php(23): require_once()
+#1 C:\Users\eduul\OneDrive\Documentos\Delicacy\public\login.php(21): AuthController->showLoginForm()
+#2 {main}
+  thrown in C:\Users\eduul\OneDrive\Documentos\Delicacy\src\views\auth\login.php on line 6
+[13-May-2026 04:00:57 America/Sao_Paulo] PHP Warning:  require_once(C:\Users\eduul\OneDrive\Documentos\Delicacy\src\views\auth/../config/config.php): Failed to open stream: No such file or directory in C:\Users\eduul\OneDrive\Documentos\Delicacy\src\views\auth\register.php on line 8
+[13-May-2026 04:00:57 America/Sao_Paulo] PHP Fatal error:  Uncaught Error: Failed opening required 'C:\Users\eduul\OneDrive\Documentos\Delicacy\src\views\auth/../config/config.php' (include_path='.;C:\php\pear') in C:\Users\eduul\OneDrive\Documentos\Delicacy\src\views\auth\register.php:8
+Stack trace:
+#0 C:\Users\eduul\OneDrive\Documentos\Delicacy\src\controllers\AuthController.php(88): require_once()
+#1 C:\Users\eduul\OneDrive\Documentos\Delicacy\public\register.php(21): AuthController->showRegisterForm()
+#2 {main}
+  thrown in C:\Users\eduul\OneDrive\Documentos\Delicacy\src\views\auth\register.php on line 8
+[13-May-2026 04:05:01 America/Sao_Paulo] Database Connection Error: Access denied for user 'root'@'localhost' (using password: NO)
+[13-May-2026 04:05:08 America/Sao_Paulo] Database Connection Error: Access denied for user 'root'@'localhost' (using password: NO)
+[13-May-2026 04:06:06 America/Sao_Paulo] Database Connection Error: Access denied for user 'root'@'localhost' (using password: NO)
+[13-May-2026 04:33:11 America/Sao_Paulo] Database Connection Error: Access denied for user 'root'@'localhost' (using password: NO)
+[13-May-2026 04:33:15 America/Sao_Paulo] Database Connection Error: Access denied for user 'root'@'localhost' (using password: NO)

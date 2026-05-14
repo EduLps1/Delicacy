@@ -1,0 +1,840 @@
+/* =============================================
+   DELICACY - Estilos Principais
+   ============================================= */
+
+   * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
+    background: #f9f9f9;
+    line-height: 1.6;
+}
+
+/* =============================================
+   VARIÁVEIS DE CORES
+   ============================================= */
+
+:root {
+    --primary: #ef3d35;
+    --primary-dark: #d92f28;
+    --secondary: #f39c12;
+    --danger: #e74c3c;
+    --success: #27ae60;
+    --warning: #f39c12;
+    --info: #3498db;
+    --light: #ecf0f1;
+    --dark: #2c3e50;
+    --border: #ddd;
+    --text: #333;
+    --text-light: #666;
+    --auth-bg: #fbf6f1;
+    --auth-bg-warm: #fff0ec;
+    --auth-card: #fffefe;
+    --auth-border: #e7ddd6;
+    --auth-input: #faf8f6;
+    --auth-red: #ef3d35;
+    --auth-red-dark: #d92f28;
+}
+
+/* =============================================
+   TIPOGRAFIA
+   ============================================= */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    margin-bottom: 1rem;
+    color: var(--dark);
+    font-weight: 600;
+}
+
+h1 {
+    font-size: 2.5rem;
+}
+
+h2 {
+    font-size: 2rem;
+}
+
+h3 {
+    font-size: 1.5rem;
+}
+
+h4 {
+    font-size: 1.25rem;
+}
+
+h5 {
+    font-size: 1.1rem;
+}
+
+h6 {
+    font-size: 1rem;
+}
+
+p {
+    margin-bottom: 1rem;
+    color: var(--text-light);
+}
+
+a {
+    color: var(--primary);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+a:hover {
+    color: var(--primary-dark);
+}
+
+/* =============================================
+   AUTENTICACAO
+   ============================================= */
+
+.auth-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background:
+        radial-gradient(circle at 100% 100%, var(--auth-bg-warm) 0, rgba(255, 240, 236, 0) 46%),
+        var(--auth-bg);
+    color: #171717;
+}
+
+.auth-card {
+    width: min(100%, 372px);
+    background: var(--auth-card);
+    border: 1px solid var(--auth-border);
+    border-radius: 8px;
+    padding: 2.7rem 2rem 2rem;
+    box-shadow: 0 18px 34px rgba(58, 45, 38, 0.16);
+}
+
+.auth-card.auth-card-lg {
+    width: min(100%, 372px);
+}
+
+.auth-brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 1.9rem;
+}
+
+.auth-logo {
+    width: 46px;
+    height: 46px;
+    display: grid;
+    place-items: center;
+    margin-bottom: 1rem;
+    border-radius: 50%;
+    background: #ffe7e5;
+    color: var(--auth-red);
+}
+
+.auth-logo svg {
+    width: 25px;
+    height: 25px;
+    stroke: currentColor;
+    stroke-width: 2.2;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.auth-title {
+    margin: 0;
+    color: #171717;
+    font-size: 1.55rem;
+    line-height: 1.1;
+    font-weight: 800;
+    letter-spacing: 0;
+    text-align: center;
+}
+
+.auth-subtitle {
+    margin: 0.45rem 0 0;
+    color: #6b4e43;
+    font-size: 0.88rem;
+    line-height: 1.4;
+    text-align: center;
+}
+
+.auth-form {
+    margin: 0;
+}
+
+.auth-field {
+    margin-bottom: 1rem;
+}
+
+.auth-field-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.55rem;
+}
+
+.auth-field label,
+.auth-field-row label {
+    margin: 0;
+    color: #111;
+    font-size: 0.84rem;
+    font-weight: 500;
+    line-height: 1.2;
+}
+
+.auth-field input {
+    width: 100%;
+    height: 37px;
+    padding: 0 0.95rem;
+    border: 1px solid #ded6d0;
+    border-radius: 10px;
+    background: var(--auth-input);
+    color: #171717;
+    font-size: 0.86rem;
+}
+
+.auth-field input::placeholder {
+    color: #7a675f;
+}
+
+.auth-field input:focus {
+    border-color: var(--auth-red);
+    box-shadow: 0 0 0 3px rgba(239, 61, 53, 0.12);
+}
+
+.auth-link {
+    color: var(--auth-red);
+    font-size: 0.76rem;
+    font-weight: 700;
+}
+
+.auth-link:hover {
+    color: var(--auth-red-dark);
+}
+
+.auth-submit {
+    width: 100%;
+    min-height: 39px;
+    padding: 0.65rem 1rem;
+    margin-top: 0.25rem;
+    border-radius: 10px;
+    background: var(--auth-red);
+    color: white;
+    font-size: 0.94rem;
+    font-weight: 800;
+}
+
+.auth-submit:hover {
+    background: var(--auth-red-dark);
+    transform: none;
+    box-shadow: 0 8px 18px rgba(239, 61, 53, 0.2);
+}
+
+.auth-footer {
+    margin-top: 1.35rem;
+    color: #6b4e43;
+    font-size: 0.84rem;
+    text-align: center;
+}
+
+.auth-footer p {
+    margin: 0;
+    color: inherit;
+}
+
+.auth-footer a {
+    color: var(--auth-red);
+    font-weight: 800;
+}
+
+.auth-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: #6b4e43;
+    font-size: 0.86rem;
+}
+
+.auth-back:hover {
+    color: var(--auth-red);
+}
+
+.auth-requirements {
+    margin: -0.25rem 0 1rem;
+    color: #7a675f;
+    font-size: 0.73rem;
+    line-height: 1.55;
+}
+
+.auth-requirements ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.auth-requirements li::before {
+    content: "x";
+    margin-right: 0.55rem;
+    color: #7a675f;
+}
+
+.auth-message {
+    margin: 0 0 1rem;
+    padding: 0.8rem 0.9rem;
+    border-radius: 8px;
+    font-size: 0.83rem;
+    line-height: 1.4;
+}
+
+.auth-message.message-success {
+    background: #edf8ef;
+    color: #17652a;
+    border: 1px solid #cfe9d4;
+}
+
+.auth-message.message-error {
+    background: #fff0ef;
+    color: #b4231d;
+    border: 1px solid #ffd2cf;
+}
+
+.auth-message.message-info,
+.auth-message.message-warning {
+    background: #fff8e8;
+    color: #805b11;
+    border: 1px solid #f5ddb0;
+}
+
+@media (max-width: 520px) {
+    .auth-page {
+        align-items: flex-start;
+        padding: 1.25rem;
+    }
+
+    .auth-card,
+    .auth-card.auth-card-lg {
+        width: 100%;
+        padding: 2.1rem 1.35rem 1.6rem;
+        margin-top: 2.5rem;
+    }
+}
+
+/* =============================================
+   UTILITÁRIOS
+   ============================================= */
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.mb-1 {
+    margin-bottom: 0.5rem;
+}
+
+.mb-2 {
+    margin-bottom: 1rem;
+}
+
+.mb-3 {
+    margin-bottom: 1.5rem;
+}
+
+.mb-4 {
+    margin-bottom: 2rem;
+}
+
+.mt-1 {
+    margin-top: 0.5rem;
+}
+
+.mt-2 {
+    margin-top: 1rem;
+}
+
+.mt-3 {
+    margin-top: 1.5rem;
+}
+
+.mt-4 {
+    margin-top: 2rem;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.text-left {
+    text-align: left;
+}
+
+.hidden {
+    display: none;
+}
+
+.visible {
+    display: block;
+}
+
+/* =============================================
+   TABELAS
+   ============================================= */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 2rem 0;
+    background: white;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+thead {
+    background: #f5f5f5;
+    border-bottom: 2px solid var(--border);
+}
+
+th {
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: var(--text);
+}
+
+td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border);
+}
+
+tbody tr:hover {
+    background: #f9f9f9;
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* =============================================
+   FORMULÁRIOS
+   ============================================= */
+
+form {
+    margin: 2rem 0;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+input[type='text'],
+input[type='email'],
+input[type='password'],
+input[type='tel'],
+input[type='date'],
+input[type='number'],
+select,
+textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 1rem;
+    font-family: inherit;
+    transition: all 0.2s;
+    box-sizing: border-box;
+}
+
+input[type='text']:focus,
+input[type='email']:focus,
+input[type='password']:focus,
+input[type='tel']:focus,
+input[type='date']:focus,
+input[type='number']:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+/* =============================================
+   BOTÕES
+   ============================================= */
+
+button,
+.btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+    font-family: inherit;
+}
+
+.btn-primary,
+button[type='submit'] {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: white;
+}
+
+.btn-primary:hover,
+button[type='submit']:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.btn-secondary {
+    background: #f5f5f5;
+    color: var(--text);
+    border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+    background: #e8e8e8;
+}
+
+.btn-danger {
+    background: var(--danger);
+    color: white;
+}
+
+.btn-danger:hover {
+    background: #c0392b;
+}
+
+.btn-success {
+    background: var(--success);
+    color: white;
+}
+
+.btn-success:hover {
+    background: #229954;
+}
+
+.btn-small {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+}
+
+.btn-block {
+    width: 100%;
+    display: block;
+}
+
+/* =============================================
+   CARDS
+   ============================================= */
+
+.card {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+}
+
+.card-header {
+    border-bottom: 1px solid var(--border);
+    margin: -2rem -2rem 1rem -2rem;
+    padding: 1.5rem 2rem;
+}
+
+.card-header h2 {
+    margin: 0;
+}
+
+.card-footer {
+    border-top: 1px solid var(--border);
+    margin: 1rem -2rem -2rem -2rem;
+    padding: 1rem 2rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+}
+
+/* =============================================
+   ALERTAS / MENSAGENS
+   ============================================= */
+
+.alert {
+    padding: 1rem;
+    border-radius: 6px;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.alert-success {
+    background: #efe;
+    color: #060;
+    border-left-color: #0a0;
+}
+
+.alert-danger {
+    background: #fee;
+    color: #c00;
+    border-left-color: #c00;
+}
+
+.alert-warning {
+    background: #ffe;
+    color: #884400;
+    border-left-color: #ff8800;
+}
+
+.alert-info {
+    background: #eef;
+    color: #006;
+    border-left-color: #00cc;
+}
+
+.alert-close {
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: inherit;
+    padding: 0;
+}
+
+.message {
+    padding: 1rem;
+    border-radius: 6px;
+    margin-bottom: 1.5rem;
+}
+
+.message-success {
+    background: #efe;
+    color: #060;
+    border: 1px solid #cfc;
+}
+
+.message-error {
+    background: #fee;
+    color: #c00;
+    border: 1px solid #fcc;
+}
+
+.message-warning {
+    background: #ffe;
+    color: #884400;
+    border: 1px solid #ffcc99;
+}
+
+.message-info {
+    background: #eef;
+    color: #006;
+    border: 1px solid #ccf;
+}
+
+/* =============================================
+   GRID
+   ============================================= */
+
+.grid {
+    display: grid;
+    gap: 2rem;
+}
+
+.grid-2 {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.grid-3 {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.grid-4 {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+/* =============================================
+   BADGES
+   ============================================= */
+
+.badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.badge-primary {
+    background: #e0e7ff;
+    color: var(--primary);
+}
+
+.badge-success {
+    background: #dcfce7;
+    color: #059669;
+}
+
+.badge-danger {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.badge-warning {
+    background: #fef3c7;
+    color: #d97706;
+}
+
+/* =============================================
+   PAGINAÇÃO
+   ============================================= */
+
+.pagination {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    margin: 2rem 0;
+    flex-wrap: wrap;
+}
+
+.pagination a,
+.pagination span {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    text-decoration: none;
+    color: var(--primary);
+}
+
+.pagination a:hover {
+    background: var(--primary);
+    color: white;
+}
+
+.pagination .active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+.pagination .disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* =============================================
+   RESPONSIVIDADE
+   ============================================= */
+
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2rem;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    table {
+        font-size: 0.9rem;
+    }
+
+    th,
+    td {
+        padding: 0.75rem 0.5rem;
+    }
+
+    .grid-2,
+    .grid-3,
+    .grid-4 {
+        grid-template-columns: 1fr;
+    }
+
+    .card {
+        padding: 1.5rem;
+    }
+
+    .card-header {
+        margin: -1.5rem -1.5rem 1rem -1.5rem;
+        padding: 1rem 1.5rem;
+    }
+
+    .card-footer {
+        margin: 1rem -1.5rem -1.5rem -1.5rem;
+        padding: 1rem 1.5rem;
+        flex-direction: column;
+    }
+
+    .card-footer button,
+    .card-footer .btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        font-size: 0.95rem;
+    }
+
+    h1 {
+        font-size: 1.5rem;
+    }
+
+    h2 {
+        font-size: 1.25rem;
+    }
+
+    button,
+    .btn {
+        padding: 0.65rem 1rem;
+        font-size: 0.95rem;
+    }
+
+    .container {
+        padding: 0 0.5rem;
+    }
+}
