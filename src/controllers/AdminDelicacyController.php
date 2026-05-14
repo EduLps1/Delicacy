@@ -1,316 +1,174 @@
 <?php
 /**
- * =============================================
- * DELICACY - Controller do Admin Delicacy
- * =============================================
+ * DELICACY - Admin Delicacy Controller
  * 
- * Gerencia o painel administrativo da plataforma Delicacy.
- * Este controller é restrito a usuários com role 'admin_delicacy'.
- * 
- * Rotas Web (renderizam views):
- * - GET  /admin/login     → Página de login
- * - POST /admin/login     → Processar login
- * - GET  /admin/dashboard → Dashboard (listar restaurantes)
- * - GET  /admin/logout    → Processar logout
- * 
- * Rotas API (retornam JSON):
- * - GET  /api/admin/restaurants         → Listar restaurantes
- * - GET  /api/admin/restaurants/{id}    → Detalhes de um restaurante
- * - POST /api/admin/restaurants/{id}/suspend → Suspender restaurante
- * - GET  /api/admin/metrics             → Métricas globais
- * - GET  /api/admin/logs                → Ver logs de ações
+ * Gerencia operações administrativas da plataforma.
+ * Acesso restrito a admin_delicacy.
  */
 
-namespace Delicacy\Controllers;
+require_once __DIR__ . '/../../config/config.php';
+require_once __DIR__ . '/../models/User.php';
+require_once __DIR__ . '/../models/Restaurant.php';
+require_once __DIR__ . '/../models/Menu.php';
 
-use Delicacy\Services\AuthService;
-use Delicacy\Models\Restaurant;
-use Delicacy\Models\User;
-use Delicacy\Models\AdminLog;
-use Delicacy\Utils\Session;
-use Delicacy\Utils\Validator;
-
-class AdminDelicacyController extends BaseController
-{
-    /**
-     * @var AuthService Serviço de autenticação
-     */
-    private $authService;
-
-    /**
-     * @var Restaurant Model de restaurante
-     */
+class AdminDelicacyController {
+    private $userModel;
     private $restaurantModel;
+    private $menuModel;
 
-    /**
-     * @var AdminLog Model de log administrativo
-     */
-    private $adminLogModel;
-
-    /**
-     * Construtor — inicializa os serviços e models necessários.
-     */
-    public function __construct()
-    {
-        $this->authService     = new AuthService();
+    public function __construct() {
+        requireRole(ROLE_ADMIN_DELICACY);
+        $this->userModel = new User();
         $this->restaurantModel = new Restaurant();
-        $this->adminLogModel   = new AdminLog();
-    }
-
-    // =============================================
-    // ROTAS WEB (Views)
-    // =============================================
-
-    /**
-     * Exibe a página de login do Admin Delicacy.
-     * Se já estiver logado como admin_delicacy, redireciona para o dashboard.
-     * 
-     * Rota: GET /admin/login
-     */
-    public function loginPage(): void
-    {
-        // Se já está logado como admin, redireciona para dashboard
-        if ($this->authService->isAuthenticated() && $this->authService->hasRole(ROLE_ADMIN_DELICACY)) {
-            $this->redirect('/admin/dashboard');
-            return;
-        }
-
-        $this->render('AdminDelicacy/login.php');
+        $this->menuModel = new Menu();
     }
 
     /**
-     * Processa o formulário de login do Admin Delicacy.
-     * 
-     * Fluxo:
-     * 1. Valida token CSRF
-     * 2. Sanitiza e valida inputs
-     * 3. Tenta login via AuthService
-     * 4. Redireciona para dashboard (sucesso) ou login (erro)
-     * 
-     * Rota: POST /admin/login
+     * Exibe dashboard do admin Delicacy
      */
-    public function loginAction(): void
-    {
-        // 1. Validar CSRF
-        if (!$this->validateCsrf()) {
-            $this->redirect('/admin/login');
-            return;
-        }
-
-        // 2. Sanitizar inputs
-        $email    = Validator::sanitize($_POST['email'] ?? '');
-        $password = $_POST['password'] ?? ''; // Não sanitizar senha (pode ter chars especiais)
-
-        // 3. Validar inputs
-        $validator = new Validator();
-        $validator->validateRequired($email, 'email');
-        $validator->validateRequired($password, 'senha');
-        $validator->validateEmail($email);
-
-        if ($validator->hasErrors()) {
-            Session::setFlash('error', $validator->getFirstError());
-            $this->redirect('/admin/login');
-            return;
-        }
-
-        // 4. Tentar login
-        $result = $this->authService->login($email, $password, ROLE_ADMIN_DELICACY);
-
-        if ($result['success']) {
-            Session::setFlash('success', $result['message']);
-            $this->redirect('/admin/dashboard');
-        } else {
-            Session::setFlash('error', $result['message']);
-            $this->redirect('/admin/login');
-        }
-    }
-
-    /**
-     * Exibe o dashboard do Admin Delicacy.
-     * Mostra a lista de todos os restaurantes cadastrados com busca.
-     * 
-     * Rota: GET /admin/dashboard
-     * Middleware: admin_delicacy
-     */
-    public function dashboard(): void
-    {
-        // Verificar se há busca
-        $searchTerm = isset($_GET['search']) ? Validator::sanitize($_GET['search']) : '';
-
-        // Buscar restaurantes (com ou sem filtro)
-        if (!empty($searchTerm)) {
-            $restaurants = $this->restaurantModel->searchByName($searchTerm);
-        } else {
-            $restaurants = $this->restaurantModel->getAllWithOwner();
-        }
-
-        // Métricas para o dashboard
-        $totalRestaurants = $this->restaurantModel->count();
-        $activeRestaurants = $this->restaurantModel->count(['is_active' => RESTAURANT_ACTIVE]);
-
-        // Logs recentes
-        $recentLogs = $this->adminLogModel->getRecentLogs(10);
-
-        $this->render('AdminDelicacy/dashboard.php', [
-            'restaurants'        => $restaurants,
-            'searchTerm'         => $searchTerm,
-            'totalRestaurants'   => $totalRestaurants,
-            'activeRestaurants'  => $activeRestaurants,
-            'recentLogs'         => $recentLogs
-        ]);
-    }
-
-    /**
-     * Processa o logout do Admin Delicacy.
-     * 
-     * Rota: GET /admin/logout
-     */
-    public function logout(): void
-    {
-        $this->authService->logout();
-        Session::start(); // Reinicia sessão para flash message
-        Session::setFlash('success', 'Logout realizado com sucesso.');
-        $this->redirect('/admin/login');
-    }
-
-    // =============================================
-    // ROTAS API (JSON)
-    // =============================================
-
-    /**
-     * API: Lista todos os restaurantes.
-     * Suporta filtro por busca via query parameter ?search=termo
-     * 
-     * Rota: GET /api/admin/restaurants
-     */
-    public function apiListRestaurants(): void
-    {
-        $searchTerm = isset($_GET['search']) ? Validator::sanitize($_GET['search']) : '';
-
-        if (!empty($searchTerm)) {
-            $restaurants = $this->restaurantModel->searchByName($searchTerm);
-        } else {
-            $restaurants = $this->restaurantModel->getAllWithOwner();
-        }
-
-        $this->jsonResponse([
-            'success' => true,
-            'data'    => $restaurants,
-            'total'   => count($restaurants)
-        ]);
-    }
-
-    /**
-     * API: Retorna detalhes de um restaurante específico.
-     * 
-     * Rota: GET /api/admin/restaurants/{id}
-     * 
-     * @param string $id ID do restaurante (vem como string da URL)
-     */
-    public function apiGetRestaurant(string $id): void
-    {
-        $restaurant = $this->restaurantModel->getById((int)$id);
-
-        if (!$restaurant) {
-            $this->jsonResponse([
-                'success' => false,
-                'error'   => 'Restaurante não encontrado.'
-            ], HTTP_NOT_FOUND);
-            return;
-        }
-
-        $this->jsonResponse([
-            'success' => true,
-            'data'    => $restaurant
-        ]);
-    }
-
-    /**
-     * API: Suspende um restaurante.
-     * Registra a ação no log de auditoria.
-     * 
-     * Rota: POST /api/admin/restaurants/{id}/suspend
-     * 
-     * @param string $id ID do restaurante
-     */
-    public function apiSuspendRestaurant(string $id): void
-    {
-        $restaurantId = (int)$id;
-        $restaurant = $this->restaurantModel->getById($restaurantId);
-
-        if (!$restaurant) {
-            $this->jsonResponse([
-                'success' => false,
-                'error'   => 'Restaurante não encontrado.'
-            ], HTTP_NOT_FOUND);
-            return;
-        }
-
-        // Inverte o status atual (ativo → suspenso, suspenso → ativo)
-        $newStatus = $restaurant['is_active'] ? false : true;
-        $success = $this->restaurantModel->updateStatus($restaurantId, $newStatus);
-
-        if ($success) {
-            // Registrar ação no log
-            $adminId = Session::get('user_id');
-            $action = $newStatus ? LOG_ACTION_ACTIVATE : LOG_ACTION_SUSPEND;
-            $this->adminLogModel->createLog(
-                $adminId,
-                $action,
-                LOG_ENTITY_RESTAURANT,
-                $restaurantId,
-                ['previous_status' => $restaurant['is_active'], 'new_status' => $newStatus ? 1 : 0]
-            );
-
-            $statusText = $newStatus ? 'ativado' : 'suspenso';
-            $this->jsonResponse([
-                'success' => true,
-                'message' => "Restaurante {$statusText} com sucesso."
-            ]);
-        } else {
-            $this->jsonResponse([
-                'success' => false,
-                'error'   => 'Erro ao atualizar status do restaurante.'
-            ], HTTP_INTERNAL_ERROR);
-        }
-    }
-
-    /**
-     * API: Retorna métricas globais da plataforma.
-     * 
-     * Rota: GET /api/admin/metrics
-     */
-    public function apiGetMetrics(): void
-    {
-        $userModel = new User();
-
-        $metrics = [
-            'total_restaurants'  => $this->restaurantModel->count(),
-            'active_restaurants' => $this->restaurantModel->count(['is_active' => RESTAURANT_ACTIVE]),
-            'total_users'        => $userModel->count(),
-            'admin_restaurants'  => $userModel->count(['role' => ROLE_ADMIN_RESTAURANT])
+    public function showDashboard() {
+        // Coleta estatísticas
+        $stats = [
+            'total_restaurants' => $this->restaurantModel->count(['is_active' => 1]),
+            'total_users' => $this->userModel->countByRole(ROLE_ADMIN_RESTAURANT),
+            'total_inactive' => $this->restaurantModel->count(['is_active' => 0]),
+            'total_menus' => $this->menuModel->count(),
+            'estimated_revenue' => 0
         ];
 
-        $this->jsonResponse([
-            'success' => true,
-            'data'    => $metrics
-        ]);
+        $csrf_token = generateCSRFToken();
+        require_once VIEWS_PATH . '/admin-delicacy/dashboard.php';
     }
 
     /**
-     * API: Retorna logs de ações administrativas.
-     * 
-     * Rota: GET /api/admin/logs
+     * Lista restaurantes com busca e paginação
      */
-    public function apiGetLogs(): void
-    {
-        $limit = isset($_GET['limit']) ? min((int)$_GET['limit'], 100) : 50;
-        $logs = $this->adminLogModel->getRecentLogs($limit);
+    public function listRestaurants() {
+        $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+        $search = isset($_GET['search']) ? sanitizeText($_GET['search']) : '';
+        $status = isset($_GET['status']) ? sanitizeText($_GET['status']) : '';
 
-        $this->jsonResponse([
-            'success' => true,
-            'data'    => $logs,
-            'total'   => count($logs)
-        ]);
+        $limit = 20;
+        $offset = ($page - 1) * $limit;
+
+        // Monta filtros
+        $filters = [];
+        if (!empty($search)) {
+            $filters['search'] = $search;
+        }
+        if ($status === 'active') {
+            $filters['is_active'] = 1;
+        } elseif ($status === 'inactive') {
+            $filters['is_active'] = 0;
+        }
+
+        // Busca restaurantes
+        $restaurants = $this->restaurantModel->findAll($filters, $limit, $offset);
+        $total = $this->restaurantModel->count($filters);
+        $pages = ceil($total / $limit);
+
+        $csrf_token = generateCSRFToken();
+        require_once VIEWS_PATH . '/admin-delicacy/list-restaurants.php';
+    }
+
+    /**
+     * Exibe detalhes de um restaurante
+     */
+    public function showRestaurant($restaurantId) {
+        $restaurant = $this->restaurantModel->findById($restaurantId);
+
+        if (!$restaurant) {
+            redirectWithMessage(
+                BASE_URL . '/admin-delicacy/restaurants.php',
+                'Restaurante não encontrado',
+                'error'
+            );
+        }
+
+        // Coleta dados do restaurante
+        $user = $this->userModel->findById($restaurant['user_id']);
+
+        $csrf_token = generateCSRFToken();
+        require_once VIEWS_PATH . '/admin-delicacy/restaurant-detail.php';
+    }
+
+    /**
+     * Atualiza status de restaurante (ativar/desativar)
+     */
+    public function updateRestaurantStatus($restaurantId) {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(405);
+            exit;
+        }
+
+        // Validar CSRF
+        $csrf_token = $_POST['csrf_token'] ?? '';
+        if (!validateCSRFToken($csrf_token)) {
+            jsonResponse(['error' => 'Token inválido'], 403);
+        }
+
+        try {
+            $restaurant = $this->restaurantModel->findById($restaurantId);
+            if (!$restaurant) {
+                jsonResponse(['error' => 'Restaurante não encontrado'], 404);
+            }
+
+            $new_status = $restaurant['is_active'] ? 0 : 1;
+            $this->restaurantModel->update($restaurantId, ['is_active' => $new_status]);
+
+            // Registra ação
+            $this->logAdminAction(
+                getAuthUserId(),
+                'update',
+                'restaurants',
+                $restaurantId,
+                ['is_active' => $new_status]
+            );
+
+            jsonResponse([
+                'success' => true,
+                'message' => 'Status atualizado com sucesso',
+                'new_status' => $new_status
+            ]);
+
+        } catch (Exception $e) {
+            jsonResponse(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Exibe lista de usuários (admin_restaurant)
+     */
+    public function listUsers() {
+        $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+        $limit = 20;
+        $offset = ($page - 1) * $limit;
+
+        $users = $this->userModel->findByRole(ROLE_ADMIN_RESTAURANT, $limit, $offset);
+        $total = $this->userModel->countByRole(ROLE_ADMIN_RESTAURANT);
+        $pages = ceil($total / $limit);
+
+        $csrf_token = generateCSRFToken();
+        require_once VIEWS_PATH . '/admin-delicacy/list-users.php';
+    }
+
+    /**
+     * Registra ação administrativa em admin_logs
+     */
+    private function logAdminAction($adminId, $action, $entityType, $entityId = null, $changes = null) {
+        $query = "INSERT INTO admin_logs (admin_id, action, entity_type, entity_id, changes) 
+                  VALUES (?, ?, ?, ?, ?)";
+        
+        Database::getInstance()->execute(
+            $query,
+            [
+                $adminId,
+                $action,
+                $entityType,
+                $entityId,
+                $changes ? json_encode($changes) : null
+            ],
+            'issis'
+        );
     }
 }

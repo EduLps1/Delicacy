@@ -1,177 +1,330 @@
 <?php
 /**
- * =============================================
- * DELICACY - Constantes do Sistema
- * =============================================
- * 
- * Centraliza TODAS as constantes usadas na aplicação.
- * Organizado por domínio/entidade para facilitar manutenção.
- * 
- * Raciocínio: Usar constantes em vez de strings soltas no código
- * previne erros de digitação (typos) e facilita refatoração.
- * Se o valor mudar, altera-se em um único lugar.
+ * DELICACY - Constantes e Funções Globais
+ *
+ * Define constantes da aplicação e funções auxiliares reutilizáveis.
  */
 
 // =============================================
-// 1. STATUS DE USUÁRIO
+// CONSTANTES DE ROLES
 // =============================================
-
-/** Usuário com acesso ativo ao sistema */
-define('USER_ACTIVE', 'active');
-
-/** Usuário desativado — não pode fazer login */
-define('USER_INACTIVE', 'inactive');
-
-// =============================================
-// 2. ROLES (PAPÉIS DE USUÁRIO)
-// =============================================
-
-/**
- * Cada role define o nível de acesso do usuário na plataforma:
- * 
- * - admin_delicacy: Administrador da plataforma Delicacy (super admin)
- * - admin_restaurant: Administrador/dono do restaurante (contratante)
- * - attendant: Atendente do restaurante (acesso limitado)
- * - customer: Cliente final (faz pedidos)
- */
 define('ROLE_ADMIN_DELICACY', 'admin_delicacy');
 define('ROLE_ADMIN_RESTAURANT', 'admin_restaurant');
 define('ROLE_ATTENDANT', 'attendant');
 define('ROLE_CUSTOMER', 'customer');
 
 // =============================================
-// 3. STATUS DO RESTAURANTE
+// CONSTANTES DE STATUS
 // =============================================
-
-/** Restaurante ativo e visível na plataforma */
-define('RESTAURANT_ACTIVE', 1);
-
-/** Restaurante suspenso/desativado pelo admin */
-define('RESTAURANT_INACTIVE', 0);
+define('STATUS_ACTIVE', 'active');
+define('STATUS_INACTIVE', 'inactive');
 
 // =============================================
-// 4. TIPOS DE COMISSÃO
+// CONSTANTES DE COMISSÃO
 // =============================================
-
-/**
- * Modelo de monetização da plataforma Delicacy:
- * 
- * - plan_only: Restaurante paga apenas mensalidade fixa (sem comissão por pedido)
- * - commission_only: Restaurante paga apenas comissão percentual sobre pedidos
- * - hybrid: Combinação de mensalidade reduzida + comissão menor
- * 
- * Raciocínio: O tipo de comissão é definido com base no faturamento
- * do restaurante. Restaurantes de baixo faturamento se beneficiam
- * do modelo híbrido, enquanto os de alto faturamento preferem comissão pura.
- */
 define('COMMISSION_PLAN_ONLY', 'plan_only');
 define('COMMISSION_ONLY', 'commission_only');
 define('COMMISSION_HYBRID', 'hybrid');
 
 // =============================================
-// 5. TIPOS DE PLANO
+// CONSTANTES DE PLANO
 // =============================================
-
 define('PLAN_BASIC', 'basic');
 define('PLAN_PREMIUM', 'premium');
 define('PLAN_CUSTOM', 'custom');
 
 // =============================================
-// 6. TIPOS DE CARDÁPIO
+// CONSTANTES DE CARDÁPIO
 // =============================================
-
 define('MENU_TYPE_ONLINE', 'online');
 define('MENU_TYPE_PRESENCIAL', 'presencial');
 define('MENU_TYPE_BOTH', 'both');
 
 // =============================================
-// 7. STATUS DE PEDIDO
+// CONSTANTES DE PEDIDO
+// =============================================
+define('ORDER_STATUS_PENDING', 'pending');
+define('ORDER_STATUS_CONFIRMED', 'confirmed');
+define('ORDER_STATUS_PREPARING', 'preparing');
+define('ORDER_STATUS_READY', 'ready');
+define('ORDER_STATUS_DELIVERED', 'delivered');
+define('ORDER_STATUS_CANCELLED', 'cancelled');
+
+// =============================================
+// CONSTANTES DE COMISSÃO (STATUS)
+// =============================================
+define('COMMISSION_STATUS_CALCULATED', 'calculated');
+define('COMMISSION_STATUS_CHARGED', 'charged');
+define('COMMISSION_STATUS_PAID', 'paid');
+
+// =============================================
+// FUNÇÕES AUXILIARES DE AUTENTICAÇÃO
 // =============================================
 
 /**
- * Fluxo do pedido:
- * pending → paid → preparing → ready → delivered
- *                                    └→ cancelled (pode ocorrer em qualquer etapa)
+ * Verifica se o usuário está autenticado
  */
-define('ORDER_PENDING', 'pending');
-define('ORDER_PAID', 'paid');
-define('ORDER_PREPARING', 'preparing');
-define('ORDER_READY', 'ready');
-define('ORDER_DELIVERED', 'delivered');
-define('ORDER_CANCELLED', 'cancelled');
+function isAuthenticated()
+{
+    return isset($_SESSION['user_id']) && !empty($_SESSION['user_id']);
+}
+
+/**
+ * Obtém os dados do usuário autenticado
+ */
+function getAuthUser()
+{
+    if (!isAuthenticated()) {
+        return null;
+    }
+    return $_SESSION['user'] ?? null;
+}
+
+/**
+ * Obtém o ID do usuário autenticado
+ */
+function getAuthUserId()
+{
+    return $_SESSION['user_id'] ?? null;
+}
+
+/**
+ * Verifica o papel do usuário autenticado
+ */
+function hasRole($role)
+{
+    $user = getAuthUser();
+    return $user && ($user['role'] === $role);
+}
+
+/**
+ * Verifica se o usuário tem um dos papéis fornecidos
+ */
+function hasAnyRole(...$roles)
+{
+    $user = getAuthUser();
+    return $user && in_array($user['role'], $roles, true);
+}
+
+/**
+ * Redireciona para login se não autenticado
+ */
+function requireAuth()
+{
+    if (!isAuthenticated()) {
+        header('Location: ' . BASE_URL . '/login.php');
+        exit;
+    }
+}
+
+/**
+ * Redireciona se não tiver o papel especificado
+ */
+function requireRole($role)
+{
+    requireAuth();
+    if (!hasRole($role)) {
+        header('Location: ' . BASE_URL . '/access-denied.php');
+        exit;
+    }
+}
+
+/**
+ * Redireciona se não tiver um dos papéis especificados
+ */
+function requireAnyRole(...$roles)
+{
+    requireAuth();
+    if (!hasAnyRole(...$roles)) {
+        header('Location: ' . BASE_URL . '/access-denied.php');
+        exit;
+    }
+}
 
 // =============================================
-// 8. MÉTODOS DE PAGAMENTO
+// FUNÇÕES AUXILIARES DE VALIDAÇÃO
 // =============================================
 
-define('PAYMENT_CARD', 'card');
-define('PAYMENT_PIX', 'pix');
-define('PAYMENT_CASH', 'cash');
+/**
+ * Valida email
+ */
+function validateEmail($email)
+{
+    return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
+}
+
+/**
+ * Valida CNPJ (básico)
+ */
+function validateCNPJ($cnpj)
+{
+    $cnpj = preg_replace('/[^\d]/', '', (string)$cnpj);
+
+    if (strlen($cnpj) !== 14) {
+        return false;
+    }
+
+    // Validação simplificada (verificar se não é tudo igual)
+    if (preg_match('/^(\d)\1{13}$/', $cnpj)) {
+        return false;
+    }
+
+    return true;
+}
+
+/**
+ * Valida telefone brasileiro
+ */
+function validatePhoneBR($phone)
+{
+    $phone = preg_replace('/[^\d]/', '', (string)$phone);
+    return strlen($phone) === 11 || strlen($phone) === 10;
+}
+
+/**
+ * Sanitiza entrada de texto
+ */
+function sanitizeText($text)
+{
+    return htmlspecialchars(trim((string)$text), ENT_QUOTES, 'UTF-8');
+}
+
+/**
+ * Sanitiza email
+ */
+function sanitizeEmail($email)
+{
+    // FILTER_SANITIZE_EMAIL foi deprecated em versões novas, mas aqui mantemos o comportamento original.
+    return filter_var($email, FILTER_SANITIZE_EMAIL);
+}
+
+/**
+ * Remove formatação de CNPJ
+ */
+function formatCNPJ($cnpj)
+{
+    return preg_replace('/[^\d]/', '', (string)$cnpj);
+}
 
 // =============================================
-// 9. STATUS DE COMISSÃO
+// FUNÇÕES AUXILIARES DE HASH/SEGURANÇA
 // =============================================
 
-define('COMMISSION_CALCULATED', 'calculated');
-define('COMMISSION_CHARGED', 'charged');
-define('COMMISSION_PAID', 'paid');
+/**
+ * Faz hash de senha
+ */
+function hashPassword($password)
+{
+    return password_hash($password, PASSWORD_HASH_ALGO, [
+        'cost' => PASSWORD_HASH_COST,
+    ]);
+}
+
+/**
+ * Verifica senha contra hash
+ */
+function verifyPassword($password, $hash)
+{
+    return password_verify($password, $hash);
+}
+
+/**
+ * Gera token CSRF
+ */
+function generateCSRFToken()
+{
+    if (!isset($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(CSRF_TOKEN_LENGTH));
+    }
+    return $_SESSION['csrf_token'];
+}
+
+/**
+ * Valida token CSRF
+ */
+function validateCSRFToken($token)
+{
+    return isset($_SESSION['csrf_token']) &&
+        hash_equals($_SESSION['csrf_token'], (string)$token);
+}
 
 // =============================================
-// 10. TIPOS DE FIDELIDADE
+// FUNÇÕES AUXILIARES DE FORMATAÇÃO
 // =============================================
 
-define('LOYALTY_NONE', 'none');
-define('LOYALTY_COUNTING', 'counting');
-define('LOYALTY_POINTS', 'points');
+/**
+ * Formata valor monetário
+ */
+function formatCurrency($value)
+{
+    return 'R$ ' . number_format((float)$value, 2, ',', '.');
+}
+
+/**
+ * Formata data/hora
+ */
+function formatDateTime($datetime, $format = 'd/m/Y H:i')
+{
+    if (!$datetime) {
+        return '-';
+    }
+    return date($format, strtotime($datetime));
+}
+
+/**
+ * Formata data
+ */
+function formatDate($date, $format = 'd/m/Y')
+{
+    if (!$date) {
+        return '-';
+    }
+    return date($format, strtotime($date));
+}
 
 // =============================================
-// 11. AÇÕES DE LOG (ADMIN)
+// FUNÇÕES AUXILIARES DE RESPOSTA
 // =============================================
 
-define('LOG_ACTION_CREATE', 'create');
-define('LOG_ACTION_UPDATE', 'update');
-define('LOG_ACTION_DELETE', 'delete');
-define('LOG_ACTION_LOGIN', 'login');
-define('LOG_ACTION_LOGOUT', 'logout');
-define('LOG_ACTION_SUSPEND', 'suspend');
-define('LOG_ACTION_ACTIVATE', 'activate');
+/**
+ * Redireciona com mensagem
+ */
+function redirectWithMessage($url, $message, $type = 'success')
+{
+    $_SESSION['message'] = $message;
+    $_SESSION['message_type'] = $type;
+    header('Location: ' . $url);
+    exit;
+}
 
-// =============================================
-// 12. ENTIDADES DE LOG
-// =============================================
+/**
+ * Obtém mensagem de sessão
+ */
+function getSessionMessage()
+{
+    if (isset($_SESSION['message'])) {
+        $message = [
+            'text' => $_SESSION['message'],
+            'type' => $_SESSION['message_type'] ?? 'success',
+        ];
+        unset($_SESSION['message']);
+        unset($_SESSION['message_type']);
+        return $message;
+    }
+    return null;
+}
 
-define('LOG_ENTITY_RESTAURANT', 'restaurant');
-define('LOG_ENTITY_MENU', 'menu');
-define('LOG_ENTITY_ORDER', 'order');
-define('LOG_ENTITY_USER', 'user');
-define('LOG_ENTITY_COMMISSION', 'commission');
+/**
+ * Retorna resposta JSON
+ */
+function jsonResponse($data, $statusCode = 200)
+{
+    http_response_code((int)$statusCode);
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+    exit;
+}
 
-// =============================================
-// 13. CÓDIGOS HTTP
-// =============================================
 
-define('HTTP_OK', 200);
-define('HTTP_CREATED', 201);
-define('HTTP_BAD_REQUEST', 400);
-define('HTTP_UNAUTHORIZED', 401);
-define('HTTP_FORBIDDEN', 403);
-define('HTTP_NOT_FOUND', 404);
-define('HTTP_METHOD_NOT_ALLOWED', 405);
-define('HTTP_CONFLICT', 409);
-define('HTTP_INTERNAL_ERROR', 500);
 
-// =============================================
-// 14. CONFIGURAÇÕES DE SEGURANÇA
-// =============================================
 
-/** Número máximo de tentativas de login antes de bloquear temporariamente */
-define('MAX_LOGIN_ATTEMPTS', 5);
-
-/** Tempo de bloqueio por tentativas excedidas (em segundos) — 15 minutos */
-define('LOGIN_LOCKOUT_TIME', 900);
-
-/** Custo do algoritmo bcrypt para hash de senha (maior = mais seguro, mais lento) */
-define('BCRYPT_COST', 12);
-
-/** Tamanho mínimo exigido para senhas */
-define('MIN_PASSWORD_LENGTH', 8);
