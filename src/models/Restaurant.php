@@ -1,210 +1,297 @@
 <?php
 /**
- * =============================================
- * DELICACY - Model de Restaurante
- * =============================================
- * 
- * Gerencia operações na tabela 'restaurants'.
- * Responsável por: criação, busca, listagem e atualização de restaurantes.
- * 
- * Tabela: restaurants
- * Campos: id, user_id, name, description, logo_url, phone, email, cnpj,
- *         total_revenue, commission_type, active_commission_rate, plan_type,
- *         is_active, created_at, updated_at
- * 
- * Nota: Arquivo renomeado de Restaurante.php para Restaurant.php
- * para conformidade com PSR-4 (nome do arquivo = nome da classe).
+ * DELICACY - Restaurant Model (Unificado)
+ *
+ * Gerencia operações com restaurantes no banco de dados.
+ * Utiliza prepared statements para segurança contra SQL injection.
  */
 
-namespace Delicacy\Models;
+require_once __DIR__ . '/../../config/database.php';
 
-class Restaurant extends BaseModel
+class Restaurant
 {
     /**
-     * @var string Nome da tabela no banco de dados
+     * Encontra restaurante por ID (com dados do dono)
      */
-    protected $table = 'restaurants';
+    public function findById($id)
+    {
+        $query = "SELECT r.*, u.email as user_email, u.name as user_name 
+                  FROM restaurants r 
+                  LEFT JOIN users u ON r.user_id = u.id 
+                  WHERE r.id = ?";
+        return Database::getInstance()->fetchOne($query, [$id], 'i');
+    }
 
     /**
-     * Busca o restaurante vinculado a um usuário específico.
-     * Cada usuário admin_restaurant tem exatamente um restaurante.
-     * 
-     * @param int $userId ID do usuário (admin_restaurant)
-     * @return array|null Dados do restaurante ou null se não encontrado
+     * Encontra restaurante por user_id
      */
-    public function findByUserId(int $userId): ?array
+    public function findByUserId($userId)
     {
-        $sql = "SELECT * FROM `{$this->table}` WHERE user_id = ?";
-        $stmt = $this->db->prepare($sql);
+        $query = "SELECT * FROM restaurants WHERE user_id = ? LIMIT 1";
+        return Database::getInstance()->fetchOne($query, [$userId], 'i');
+    }
 
-        if (!$stmt) {
-            error_log("DELICACY DB: Erro no prepare (findByUserId): " . $this->db->error);
-            return null;
+    /**
+     * Verifica se CNPJ já existe
+     */
+    public function cnpjExists($cnpj, $excludeId = null)
+    {
+        $cnpj_clean = formatCNPJ($cnpj);
+
+        if ($excludeId) {
+            $query = "SELECT id FROM restaurants WHERE cnpj = ? AND id != ?";
+            return Database::getInstance()->fetchOne($query, [$cnpj_clean, $excludeId], 'si') !== null;
         }
 
-        $stmt->bind_param("i", $userId);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $restaurant = $result->fetch_assoc();
-        $stmt->close();
-
-        return $restaurant ?: null;
+        $query = "SELECT id FROM restaurants WHERE cnpj = ?";
+        return Database::getInstance()->fetchOne($query, [$cnpj_clean], 's') !== null;
     }
 
     /**
-     * Busca um restaurante pelo CNPJ.
-     * Usado para verificar duplicidade no cadastro.
-     * 
-     * @param string $cnpj CNPJ sem formatação (14 dígitos)
-     * @return array|null Dados do restaurante ou null se não encontrado
+     * Cria novo restaurante
      */
-    public function findByCnpj(string $cnpj): ?array
+    public function create($data)
     {
-        $sql = "SELECT * FROM `{$this->table}` WHERE cnpj = ?";
-        $stmt = $this->db->prepare($sql);
-
-        if (!$stmt) {
-            error_log("DELICACY DB: Erro no prepare (findByCnpj): " . $this->db->error);
-            return null;
+        // Validações
+        if (!isset($data['user_id']) || empty($data['user_id'])) {
+            throw new Exception('user_id é obrigatório');
         }
 
-        $stmt->bind_param("s", $cnpj);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $restaurant = $result->fetch_assoc();
-        $stmt->close();
-
-        return $restaurant ?: null;
-    }
-
-    /**
-     * Cria um novo restaurante no banco de dados.
-     * 
-     * @param int    $userId ID do usuário dono (admin_restaurant)
-     * @param string $name   Nome do restaurante
-     * @param string $email  Email comercial
-     * @param string $phone  Telefone com DDD
-     * @param string $cnpj   CNPJ sem formatação
-     * @return int|false ID do restaurante criado ou false em caso de erro
-     */
-    public function createRestaurant(int $userId, string $name, string $email, string $phone, string $cnpj)
-    {
-        $data = [
-            'user_id'                => $userId,
-            'name'                   => $name,
-            'email'                  => $email,
-            'phone'                  => $phone,
-            'cnpj'                   => $cnpj,
-            'commission_type'        => COMMISSION_HYBRID,
-            'active_commission_rate' => 2.5,
-            'plan_type'              => PLAN_BASIC,
-            'is_active'              => RESTAURANT_ACTIVE,
-            'created_at'             => date('Y-m-d H:i:s'),
-            'updated_at'             => date('Y-m-d H:i:s')
-        ];
-
-        return $this->insert($data);
-    }
-
-    /**
-     * Retorna todos os restaurantes ativos.
-     * Usa prepared statement em vez de concatenação direta.
-     * 
-     * CORREÇÃO: Versão anterior usava concatenação direta na query:
-     *   "WHERE is_active = " . RESTAURANT_ACTIVE
-     * Substituído por prepared statement para consistência de segurança.
-     * 
-     * @return array Lista de restaurantes ativos
-     */
-    public function getActiveRestaurants(): array
-    {
-        $sql = "SELECT r.*, u.name as owner_name, u.email as owner_email
-                FROM `{$this->table}` r
-                INNER JOIN users u ON r.user_id = u.id
-                WHERE r.is_active = ?";
-        $stmt = $this->db->prepare($sql);
-
-        if (!$stmt) {
-            error_log("DELICACY DB: Erro no prepare (getActiveRestaurants): " . $this->db->error);
-            return [];
+        if (!isset($data['name']) || empty($data['name'])) {
+            throw new Exception('Nome do restaurante é obrigatório');
         }
 
-        $active = RESTAURANT_ACTIVE;
-        $stmt->bind_param("i", $active);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $restaurants = $result->fetch_all(MYSQLI_ASSOC);
-        $stmt->close();
-
-        return $restaurants;
-    }
-
-    /**
-     * Busca restaurantes por nome (busca parcial com LIKE).
-     * Usado na funcionalidade de busca do Admin Delicacy.
-     * 
-     * @param string $name Termo de busca
-     * @return array Lista de restaurantes que correspondem à busca
-     */
-    public function searchByName(string $name): array
-    {
-        $sql = "SELECT r.*, u.name as owner_name, u.email as owner_email
-                FROM `{$this->table}` r
-                INNER JOIN users u ON r.user_id = u.id
-                WHERE r.name LIKE ? OR r.cnpj LIKE ?
-                ORDER BY r.name ASC";
-        $stmt = $this->db->prepare($sql);
-
-        if (!$stmt) {
-            error_log("DELICACY DB: Erro no prepare (searchByName): " . $this->db->error);
-            return [];
+        if (!isset($data['cnpj']) || empty($data['cnpj'])) {
+            throw new Exception('CNPJ é obrigatório');
         }
 
-        $searchTerm = "%{$name}%";
-        $stmt->bind_param("ss", $searchTerm, $searchTerm);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $restaurants = $result->fetch_all(MYSQLI_ASSOC);
-        $stmt->close();
-
-        return $restaurants;
-    }
-
-    /**
-     * Lista todos os restaurantes com dados do proprietário (JOIN com users).
-     * Usado no dashboard do Admin Delicacy.
-     * 
-     * @return array Lista de restaurantes com dados do dono
-     */
-    public function getAllWithOwner(): array
-    {
-        $sql = "SELECT r.*, u.name as owner_name, u.email as owner_email
-                FROM `{$this->table}` r
-                INNER JOIN users u ON r.user_id = u.id
-                ORDER BY r.created_at DESC";
-        $result = $this->db->query($sql);
-
-        if (!$result) {
-            error_log("DELICACY DB: Erro em getAllWithOwner: " . $this->db->error);
-            return [];
+        if (!validateCNPJ($data['cnpj'])) {
+            throw new Exception('CNPJ inválido');
         }
 
-        return $result->fetch_all(MYSQLI_ASSOC);
+        $cnpj_clean = formatCNPJ($data['cnpj']);
+
+        if ($this->cnpjExists($cnpj_clean)) {
+            throw new Exception('CNPJ já registrado');
+        }
+
+        // Validar email se fornecido
+        if (isset($data['email']) && !empty($data['email'])) {
+            if (!validateEmail($data['email'])) {
+                throw new Exception('Email do restaurante inválido');
+            }
+        }
+
+        $query = "INSERT INTO restaurants 
+                  (user_id, name, description, phone, email, cnpj, commission_type, 
+                   active_commission_rate, plan_type, is_active) 
+                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        $commission_type = $data['commission_type'] ?? COMMISSION_HYBRID;
+        $commission_rate = $data['commission_rate'] ?? 2.50;
+        $plan_type = $data['plan_type'] ?? PLAN_BASIC;
+
+        $stmt = Database::getInstance()->execute(
+            $query,
+            [
+                $data['user_id'],
+                $data['name'],
+                $data['description'] ?? null,
+                $data['phone'] ?? null,
+                $data['email'] ?? null,
+                $cnpj_clean,
+                $commission_type,
+                $commission_rate,
+                $plan_type,
+                1  // is_active = 1
+            ],
+            'issssssdsi'
+        );
+
+        if ($stmt === false) {
+            throw new Exception('Erro ao criar restaurante');
+        }
+
+        return Database::getInstance()->lastInsertId();
     }
 
     /**
-     * Atualiza o status de ativação do restaurante.
-     * Usado pelo Admin Delicacy para suspender/ativar restaurantes.
-     * 
-     * @param int  $restaurantId ID do restaurante
-     * @param bool $isActive     True para ativar, false para suspender
-     * @return bool True se atualizado com sucesso
+     * Lista todos os restaurantes com filtros
      */
-    public function updateStatus(int $restaurantId, bool $isActive): bool
+    public function findAll($filters = [], $limit = 100, $offset = 0)
     {
-        return $this->update($restaurantId, [
-            'is_active'  => $isActive ? RESTAURANT_ACTIVE : RESTAURANT_INACTIVE,
-            'updated_at' => date('Y-m-d H:i:s')
-        ]);
+        $query = "SELECT * FROM restaurants WHERE 1=1";
+        $params = [];
+        $types = '';
+
+        if (isset($filters['is_active'])) {
+            $query .= " AND is_active = ?";
+            $params[] = $filters['is_active'];
+            $types .= 'i';
+        }
+
+        if (isset($filters['commission_type'])) {
+            $query .= " AND commission_type = ?";
+            $params[] = $filters['commission_type'];
+            $types .= 's';
+        }
+
+        if (isset($filters['search'])) {
+            $query .= " AND (name LIKE ? OR cnpj LIKE ?)";
+            $search = '%' . $filters['search'] . '%';
+            $params[] = $search;
+            $params[] = $search;
+            $types .= 'ss';
+        }
+
+        $query .= " ORDER BY created_at DESC LIMIT ? OFFSET ?";
+        $params[] = $limit;
+        $params[] = $offset;
+        $types .= 'ii';
+
+        return Database::getInstance()->fetchAll($query, $params, $types);
+    }
+
+    /**
+     * Conta total de restaurantes com filtros
+     */
+    public function count($filters = [])
+    {
+        $query = "SELECT COUNT(*) as total FROM restaurants WHERE 1=1";
+        $params = [];
+        $types = '';
+
+        if (isset($filters['is_active'])) {
+            $query .= " AND is_active = ?";
+            $params[] = $filters['is_active'];
+            $types .= 'i';
+        }
+
+        if (isset($filters['commission_type'])) {
+            $query .= " AND commission_type = ?";
+            $params[] = $filters['commission_type'];
+            $types .= 's';
+        }
+
+        if (isset($filters['search'])) {
+            $query .= " AND (name LIKE ? OR cnpj LIKE ?)";
+            $search = '%' . $filters['search'] . '%';
+            $params[] = $search;
+            $params[] = $search;
+            $types .= 'ss';
+        }
+
+        $result = Database::getInstance()->fetchOne($query, $params, $types);
+        return (int)($result['total'] ?? 0);
+    }
+
+    /**
+     * Atualiza restaurante
+     */
+    public function update($id, $data)
+    {
+        $updates = [];
+        $params = [];
+        $types = '';
+
+        if (isset($data['name'])) {
+            $updates[] = 'name = ?';
+            $params[] = $data['name'];
+            $types .= 's';
+        }
+
+        if (isset($data['description'])) {
+            $updates[] = 'description = ?';
+            $params[] = $data['description'];
+            $types .= 's';
+        }
+
+        if (isset($data['phone'])) {
+            $updates[] = 'phone = ?';
+            $params[] = $data['phone'];
+            $types .= 's';
+        }
+
+        if (isset($data['email'])) {
+            if (!empty($data['email']) && !validateEmail($data['email'])) {
+                throw new Exception('Email inválido');
+            }
+            $updates[] = 'email = ?';
+            $params[] = $data['email'];
+            $types .= 's';
+        }
+
+        if (isset($data['commission_type'])) {
+            $updates[] = 'commission_type = ?';
+            $params[] = $data['commission_type'];
+            $types .= 's';
+        }
+
+        if (isset($data['active_commission_rate'])) {
+            $updates[] = 'active_commission_rate = ?';
+            $params[] = $data['active_commission_rate'];
+            $types .= 'd';
+        }
+
+        if (isset($data['plan_type'])) {
+            $updates[] = 'plan_type = ?';
+            $params[] = $data['plan_type'];
+            $types .= 's';
+        }
+
+        if (isset($data['is_active'])) {
+            $updates[] = 'is_active = ?';
+            $params[] = $data['is_active'];
+            $types .= 'i';
+        }
+
+        if (empty($updates)) {
+            return true;
+        }
+
+        $updates[] = 'updated_at = NOW()';
+        $query = "UPDATE restaurants SET " . implode(', ', $updates) . " WHERE id = ?";
+        $params[] = $id;
+        $types .= 'i';
+
+        $stmt = Database::getInstance()->execute($query, $params, $types);
+        return $stmt !== false;
+    }
+
+    /**
+     * Deleta restaurante
+     */
+    public function delete($id)
+    {
+        $query = "DELETE FROM restaurants WHERE id = ?";
+        $stmt = Database::getInstance()->execute($query, [$id], 'i');
+        return $stmt !== false;
+    }
+
+    /**
+     * Alterna is_active (0 <-> 1)
+     */
+    public function toggleIsActive($restaurantId)
+    {
+        $row = Database::getInstance()->fetchOne(
+            "SELECT is_active FROM restaurants WHERE id = ? LIMIT 1",
+            [$restaurantId],
+            'i'
+        );
+
+        if (!$row) {
+            return false;
+        }
+
+        $current = (int)($row['is_active'] ?? 0);
+        $newValue = $current === 1 ? 0 : 1;
+
+        Database::getInstance()->execute(
+            "UPDATE restaurants SET is_active = ?, updated_at = NOW() WHERE id = ?",
+            [$newValue, $restaurantId],
+            'ii'
+        );
+
+        return true;
     }
 }
