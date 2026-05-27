@@ -126,8 +126,12 @@ class AuthController {
             redirectWithMessage(BASE_URL . '/register.php', 'Email inválido', 'error');
         }
 
-        if (strlen($password) < 6) {
-            redirectWithMessage(BASE_URL . '/register.php', 'Senha deve ter no mínimo 6 caracteres', 'error');
+        if (strlen($password) < 8) {
+            redirectWithMessage(BASE_URL . '/register.php', 'Senha deve ter no mínimo 8 caracteres', 'error');
+        }
+
+        if (!preg_match('/[A-Z]/', $password) || !preg_match('/[a-z]/', $password) || !preg_match('/[0-9]/', $password)) {
+            redirectWithMessage(BASE_URL . '/register.php', 'Senha deve conter letras maiúscula, minúscula e número', 'error');
         }
 
         if ($password !== $confirm_password) {

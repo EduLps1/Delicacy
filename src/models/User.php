@@ -54,8 +54,12 @@ class User {
             throw new Exception('Email inválido');
         }
 
-        if (strlen($data['password']) < 6) {
-            throw new Exception('Senha deve ter no mínimo 6 caracteres');
+        if (strlen($data['password']) < 8) {
+            throw new Exception('Senha deve ter no mínimo 8 caracteres');
+        }
+
+        if (!preg_match('/[A-Z]/', $data['password']) || !preg_match('/[a-z]/', $data['password']) || !preg_match('/[0-9]/', $data['password'])) {
+            throw new Exception('Senha deve conter letras maiúscula, minúscula e número');
         }
 
         if ($this->emailExists($data['email'])) {
@@ -166,8 +170,11 @@ class User {
         }
 
         if (isset($data['password'])) {
-            if (strlen($data['password']) < 6) {
-                throw new Exception('Senha deve ter no mínimo 6 caracteres');
+            if (strlen($data['password']) < 8) {
+                throw new Exception('Senha deve ter no mínimo 8 caracteres');
+            }
+            if (!preg_match('/[A-Z]/', $data['password']) || !preg_match('/[a-z]/', $data['password']) || !preg_match('/[0-9]/', $data['password'])) {
+                throw new Exception('Senha deve conter letras maiúscula, minúscula e número');
             }
             $updates[] = 'password = ?';
             $params[] = hashPassword($data['password']);

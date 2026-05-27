@@ -120,31 +120,35 @@ class Restaurant
      */
     public function findAll($filters = [], $limit = 100, $offset = 0)
     {
-        $query = "SELECT * FROM restaurants WHERE 1=1";
+        $query = "SELECT r.*, u.name AS owner_name, u.email AS owner_email
+                  FROM restaurants r
+                  LEFT JOIN users u ON u.id = r.user_id
+                  WHERE 1=1";
         $params = [];
         $types = '';
 
         if (isset($filters['is_active'])) {
-            $query .= " AND is_active = ?";
+            $query .= " AND r.is_active = ?";
             $params[] = $filters['is_active'];
             $types .= 'i';
         }
 
         if (isset($filters['commission_type'])) {
-            $query .= " AND commission_type = ?";
+            $query .= " AND r.commission_type = ?";
             $params[] = $filters['commission_type'];
             $types .= 's';
         }
 
         if (isset($filters['search'])) {
-            $query .= " AND (name LIKE ? OR cnpj LIKE ?)";
+            $query .= " AND (r.name LIKE ? OR r.cnpj LIKE ? OR u.name LIKE ?)";
             $search = '%' . $filters['search'] . '%';
             $params[] = $search;
             $params[] = $search;
-            $types .= 'ss';
+            $params[] = $search;
+            $types .= 'sss';
         }
 
-        $query .= " ORDER BY created_at DESC LIMIT ? OFFSET ?";
+        $query .= " ORDER BY r.created_at DESC LIMIT ? OFFSET ?";
         $params[] = $limit;
         $params[] = $offset;
         $types .= 'ii';
@@ -157,28 +161,32 @@ class Restaurant
      */
     public function count($filters = [])
     {
-        $query = "SELECT COUNT(*) as total FROM restaurants WHERE 1=1";
+        $query = "SELECT COUNT(*) as total
+                  FROM restaurants r
+                  LEFT JOIN users u ON u.id = r.user_id
+                  WHERE 1=1";
         $params = [];
         $types = '';
 
         if (isset($filters['is_active'])) {
-            $query .= " AND is_active = ?";
+            $query .= " AND r.is_active = ?";
             $params[] = $filters['is_active'];
             $types .= 'i';
         }
 
         if (isset($filters['commission_type'])) {
-            $query .= " AND commission_type = ?";
+            $query .= " AND r.commission_type = ?";
             $params[] = $filters['commission_type'];
             $types .= 's';
         }
 
         if (isset($filters['search'])) {
-            $query .= " AND (name LIKE ? OR cnpj LIKE ?)";
+            $query .= " AND (r.name LIKE ? OR r.cnpj LIKE ? OR u.name LIKE ?)";
             $search = '%' . $filters['search'] . '%';
             $params[] = $search;
             $params[] = $search;
-            $types .= 'ss';
+            $params[] = $search;
+            $types .= 'sss';
         }
 
         $result = Database::getInstance()->fetchOne($query, $params, $types);

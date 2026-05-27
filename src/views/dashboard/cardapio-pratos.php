@@ -1,206 +1,119 @@
-﻿<?php
+<?php
 /**
- * DELICACY - Editar CardÃ¡pio + Gerenciar Pratos
- * VariÃ¡veis: $menu, $items, $restaurant, $csrf_token
+ * DELICACY - Editar Cardapio e Gerenciar Pratos
+ * Variaveis: $menu, $items, $restaurant, $csrf_token
  */
 $message = getSessionMessage();
+$panelTitle = 'Editar ' . ($menu['name'] ?? 'Cardápio');
+$panelActive = 'cardapios';
+require VIEWS_PATH . '/admin-contratante/_panel-start.php';
 ?>
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editar <?php echo htmlspecialchars($menu['name']); ?> - Delicacy</title>
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/style.css">
-</head>
-<body>
-    <header class="header">
-        <div class="header-content">
-            <div class="header-logo">
-                <a href="<?php echo BASE_URL; ?>" class="logo"><h1>Delicacy</h1></a>
-            </div>
-            <nav class="header-nav">
-                <span class="user-info">OlÃ¡, <strong><?php echo htmlspecialchars(getAuthUser()['name']); ?></strong></span>
-                <a href="<?php echo BASE_URL; ?>/logout.php" class="btn-logout">Sair</a>
-            </nav>
-        </div>
-    </header>
-
-    <div class="layout-with-sidebar">
-        <aside class="sidebar">
-            <nav class="sidebar-nav">
-                <h3 class="nav-title">Restaurante</h3>
-                <ul>
-                    <li><a href="<?php echo BASE_URL; ?>/admin-contratante/" class="nav-link"> Dashboard</a></li>
-                    <li><a href="<?php echo BASE_URL; ?>/admin-contratante/cardapio.php" class="nav-link active"> CardÃ¡pio</a></li>
-                    <li><a href="<?php echo BASE_URL; ?>/admin-contratante/pedidos.php" class="nav-link"> Pedidos</a></li>
-                </ul>
-            </nav>
-        </aside>
-
-        <main class="main-content">
-            <div class="dashboard">
-                <div class="dashboard-header">
-                    <h1>âœï¸ <?php echo htmlspecialchars($menu['name']); ?></h1>
-                    <p><a href="<?php echo BASE_URL; ?>/admin-contratante/cardapio.php">â† Voltar para lista</a></p>
-                </div>
-
-                <?php if ($message): ?>
-                    <div class="message-container">
-                        <div class="message message-<?php echo htmlspecialchars($message['type']); ?>">
-                            <span><?php echo htmlspecialchars($message['text']); ?></span>
-                            <button onclick="this.parentElement.parentElement.style.display='none';">Ã—</button>
-                        </div>
-                    </div>
-                <?php endif; ?>
-
-                <!-- Editar dados do cardÃ¡pio -->
-                <div class="card">
-                    <div class="card-header"><h2> Dados do CardÃ¡pio</h2></div>
-                    <form method="POST">
-                        <input type="hidden" name="action" value="update_menu">
-                        <input type="hidden" name="menu_id" value="<?php echo $menu['id']; ?>">
-                        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
-
-                        <div class="form-group">
-                            <label for="name">Nome do CardÃ¡pio *</label>
-                            <input type="text" id="name" name="name" required
-                                   value="<?php echo htmlspecialchars($menu['name']); ?>">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="description">DescriÃ§Ã£o</label>
-                            <textarea id="description" name="description"><?php echo htmlspecialchars($menu['description'] ?? ''); ?></textarea>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="type">Tipo</label>
-                                <select id="type" name="type">
-                                    <option value="both" <?php echo $menu['type'] === 'both' ? 'selected' : ''; ?>>Online + Presencial</option>
-                                    <option value="online" <?php echo $menu['type'] === 'online' ? 'selected' : ''; ?>>Delivery</option>
-                                    <option value="presencial" <?php echo $menu['type'] === 'presencial' ? 'selected' : ''; ?>>Presencial</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="unit_number">Unidade</label>
-                                <input type="number" id="unit_number" name="unit_number" min="1"
-                                       value="<?php echo (int)$menu['unit_number']; ?>">
-                            </div>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary">ðŸ’¾ Salvar CardÃ¡pio</button>
-                    </form>
-                </div>
-
-                <!-- Adicionar novo prato -->
-                <div class="card">
-                    <div class="card-header"><h2> Adicionar Prato</h2></div>
-                    <form method="POST" enctype="multipart/form-data">
-                        <input type="hidden" name="action" value="add_item">
-                        <input type="hidden" name="menu_id" value="<?php echo $menu['id']; ?>">
-                        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="item_name">Nome do Prato *</label>
-                                <input type="text" id="item_name" name="item_name" required placeholder="Ex: HambÃºrguer Artesanal">
-                            </div>
-                            <div class="form-group">
-                                <label for="item_price">PreÃ§o (R$) *</label>
-                                <input type="number" id="item_price" name="item_price" required step="0.01" min="0" placeholder="29.90">
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="item_category">Categoria</label>
-                                <select id="item_category" name="item_category">
-                                    <option value="entrada"> Entrada</option>
-                                    <option value="prato_principal" selected> Prato Principal</option>
-                                    <option value="bebida"> Bebida</option>
-                                    <option value="sobremesa"> Sobremesa</option>
-                                    <option value="acompanhamento"> Acompanhamento</option>
-                                    <option value="outros"> Outros</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="item_image">Imagem</label>
-                                <input type="file" id="item_image" name="item_image" accept="image/*">
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="item_description">DescriÃ§Ã£o</label>
-                            <textarea id="item_description" name="item_description" placeholder="Ingredientes, informaÃ§Ãµes..."></textarea>
-                        </div>
-
-                        <button type="submit" class="btn btn-success">âž• Adicionar Prato</button>
-                    </form>
-                </div>
-
-                <!-- Lista de pratos -->
-                <div class="card">
-                    <div class="card-header">
-                        <h2>ðŸ½ï¸ Pratos (<?php echo count($items); ?>)</h2>
-                    </div>
-
-                    <?php if (empty($items)): ?>
-                        <div class="empty-state-small">
-                            <p>Nenhum prato adicionado ainda. Use o formulÃ¡rio acima para adicionar.</p>
-                        </div>
-                    <?php else: ?>
-                        <div class="items-list">
-                            <?php foreach ($items as $item): ?>
-                                <div class="item-row <?php echo $item['is_active'] ? '' : 'item-inactive'; ?>">
-                                    <div class="item-info">
-                                        <?php if (!empty($item['image_url'])): ?>
-                                            <img src="<?php echo BASE_URL . htmlspecialchars($item['image_url']); ?>" 
-                                                 alt="<?php echo htmlspecialchars($item['name']); ?>" class="item-thumb">
-                                        <?php else: ?>
-                                            <div class="item-thumb item-thumb-placeholder">ðŸ½ï¸</div>
-                                        <?php endif; ?>
-                                        <div class="item-details">
-                                            <h4><?php echo htmlspecialchars($item['name']); ?></h4>
-                                            <p class="item-desc"><?php echo htmlspecialchars($item['description'] ?? ''); ?></p>
-                                            <div class="item-meta">
-                                                <span class="badge badge-primary"><?php echo htmlspecialchars($item['category']); ?></span>
-                                                <span class="item-price"><?php echo formatCurrency($item['price']); ?></span>
-                                                <?php if (!$item['is_active']): ?>
-                                                    <span class="badge badge-danger">Inativo</span>
-                                                <?php endif; ?>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="item-actions">
-                                        <form method="POST" style="display:inline;">
-                                            <input type="hidden" name="action" value="toggle_item">
-                                            <input type="hidden" name="menu_id" value="<?php echo $menu['id']; ?>">
-                                            <input type="hidden" name="item_id" value="<?php echo $item['id']; ?>">
-                                            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
-                                            <button type="submit" class="btn btn-small <?php echo $item['is_active'] ? 'btn-secondary' : 'btn-success'; ?>" title="<?php echo $item['is_active'] ? 'Desativar' : 'Ativar'; ?>">
-                                                <?php echo $item['is_active'] ? 'â¸ï¸' : 'â–¶ï¸'; ?>
-                                            </button>
-                                        </form>
-                                        <form method="POST" style="display:inline;" onsubmit="return confirm('Excluir este prato?')">
-                                            <input type="hidden" name="action" value="delete_item">
-                                            <input type="hidden" name="menu_id" value="<?php echo $menu['id']; ?>">
-                                            <input type="hidden" name="item_id" value="<?php echo $item['id']; ?>">
-                                            <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
-                                            <button type="submit" class="btn btn-small btn-danger">ðŸ—‘ï¸</button>
-                                        </form>
-                                    </div>
-                                </div>
-                            <?php endforeach; ?>
-                        </div>
-                    <?php endif; ?>
-                </div>
-            </div>
-        </main>
+<div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+    <div>
+        <h1 class="text-2xl font-bold tracking-tight"><?php echo htmlspecialchars($menu['name']); ?></h1>
+        <p class="text-xs text-textSec mt-1">Edite os dados do cardápio e gerencie seus pratos.</p>
     </div>
+    <a href="<?php echo BASE_URL; ?>/admin-contratante/cardapio.php" class="text-xs text-textSec hover:text-brandRed">Voltar para cardápios</a>
+</div>
+<?php if ($message): ?>
+    <div class="rounded-xl border border-borderCard bg-bgCard px-4 py-3 text-xs"><?php echo htmlspecialchars($message['text']); ?></div>
+<?php endif; ?>
+<div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+    <form method="POST" class="bg-bgCard rounded-2xl p-6 border border-borderCard space-y-4">
+        <h2 class="text-sm font-bold border-b border-borderCard pb-3">Dados do Cardápio</h2>
+        <input type="hidden" name="action" value="update_menu">
+        <input type="hidden" name="menu_id" value="<?php echo (int)$menu['id']; ?>">
+        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
+        <label class="flex flex-col gap-2 text-xs font-semibold">Nome
+            <input type="text" name="name" required value="<?php echo htmlspecialchars($menu['name']); ?>" class="bg-bgMain font-normal border border-borderCard rounded-xl px-3 py-3 outline-none focus:border-brandRed">
+        </label>
+        <label class="flex flex-col gap-2 text-xs font-semibold">Descrição
+            <textarea name="description" class="bg-bgMain font-normal border border-borderCard rounded-xl px-3 py-3 h-20 resize-none outline-none focus:border-brandRed"><?php echo htmlspecialchars($menu['description'] ?? ''); ?></textarea>
+        </label>
+        <div class="grid grid-cols-2 gap-4">
+            <label class="flex flex-col gap-2 text-xs font-semibold">Canal
+                <select name="type" class="bg-bgMain font-normal border border-borderCard rounded-xl px-3 py-3 outline-none">
+                    <option value="both" <?php echo $menu['type'] === 'both' ? 'selected' : ''; ?>>Online + Presencial</option>
+                    <option value="online" <?php echo $menu['type'] === 'online' ? 'selected' : ''; ?>>Delivery</option>
+                    <option value="presencial" <?php echo $menu['type'] === 'presencial' ? 'selected' : ''; ?>>Presencial</option>
+                </select>
+            </label>
+            <label class="flex flex-col gap-2 text-xs font-semibold">Unidade
+                <input type="number" name="unit_number" min="1" value="<?php echo (int)$menu['unit_number']; ?>" class="bg-bgMain font-normal border border-borderCard rounded-xl px-3 py-3 outline-none">
+            </label>
+        </div>
+        <button type="submit" class="rounded-xl bg-brandRed text-white text-xs font-semibold px-4 py-3">Salvar cardápio</button>
+    </form>
 
-    <footer class="footer">
-        <p>&copy; 2024 Delicacy. Todos os direitos reservados.</p>
-    </footer>
-</body>
-</html>
+    <form method="POST" enctype="multipart/form-data" class="bg-bgCard rounded-2xl p-6 border border-borderCard space-y-4">
+        <h2 class="text-sm font-bold border-b border-borderCard pb-3">Adicionar Prato</h2>
+        <input type="hidden" name="action" value="add_item">
+        <input type="hidden" name="menu_id" value="<?php echo (int)$menu['id']; ?>">
+        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <label class="flex flex-col gap-2 text-xs font-semibold">Nome do prato
+                <input type="text" name="item_name" required class="bg-bgMain font-normal border border-borderCard rounded-xl px-3 py-3 outline-none focus:border-brandRed">
+            </label>
+            <label class="flex flex-col gap-2 text-xs font-semibold">Preço (R$)
+                <input type="number" name="item_price" required step="0.01" min="0" class="bg-bgMain font-normal border border-borderCard rounded-xl px-3 py-3 outline-none focus:border-brandRed">
+            </label>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <label class="flex flex-col gap-2 text-xs font-semibold">Categoria
+                <select name="item_category" class="bg-bgMain font-normal border border-borderCard rounded-xl px-3 py-3 outline-none">
+                    <option value="entrada">Entrada</option>
+                    <option value="prato_principal" selected>Prato Principal</option>
+                    <option value="bebida">Bebida</option>
+                    <option value="sobremesa">Sobremesa</option>
+                    <option value="acompanhamento">Acompanhamento</option>
+                    <option value="outros">Outros</option>
+                </select>
+            </label>
+            <label class="flex flex-col gap-2 text-xs font-semibold">Imagem
+                <input type="file" name="item_image" accept="image/*" class="bg-bgMain font-normal border border-borderCard rounded-xl px-3 py-2 outline-none">
+            </label>
+        </div>
+        <label class="flex flex-col gap-2 text-xs font-semibold">Descrição
+            <textarea name="item_description" class="bg-bgMain font-normal border border-borderCard rounded-xl px-3 py-3 h-16 resize-none outline-none"></textarea>
+        </label>
+        <button type="submit" class="rounded-xl bg-brandRed text-white text-xs font-semibold px-4 py-3">Adicionar prato</button>
+    </form>
+</div>
+
+<section class="bg-bgCard rounded-2xl p-6 border border-borderCard space-y-4">
+    <h2 class="text-sm font-bold">Pratos cadastrados (<?php echo count($items); ?>)</h2>
+    <?php if (empty($items)): ?>
+        <p class="border border-dashed border-borderCard rounded-xl p-8 text-xs text-textSec text-center">Nenhum prato adicionado ainda.</p>
+    <?php else: ?>
+        <div class="divide-y divide-borderCard">
+            <?php foreach ($items as $item): ?>
+                <article class="flex flex-col sm:flex-row sm:items-center gap-4 py-4 <?php echo $item['is_active'] ? '' : 'opacity-60'; ?>">
+                    <div class="w-12 h-12 rounded-xl bg-bgMain border border-borderCard overflow-hidden flex items-center justify-center text-textSec shrink-0">
+                        <?php if (!empty($item['image_url'])): ?>
+                            <img src="<?php echo BASE_URL . htmlspecialchars($item['image_url']); ?>" alt="" class="w-full h-full object-cover">
+                        <?php else: ?>
+                            <i class="fa-solid fa-utensils"></i>
+                        <?php endif; ?>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h3 class="text-xs font-bold"><?php echo htmlspecialchars($item['name']); ?></h3>
+                        <p class="text-[11px] text-textSec truncate"><?php echo htmlspecialchars($item['description'] ?? 'Sem descrição'); ?></p>
+                    </div>
+                    <span class="text-xs font-bold"><?php echo formatCurrency($item['price']); ?></span>
+                    <span class="rounded-full px-2 py-1 text-[10px] <?php echo $item['is_active'] ? 'bg-emerald-500/10 text-emerald-500' : 'bg-brandRed/10 text-brandRed'; ?>"><?php echo $item['is_active'] ? 'Ativo' : 'Inativo'; ?></span>
+                    <div class="flex gap-2">
+                        <form method="POST">
+                            <input type="hidden" name="action" value="toggle_item"><input type="hidden" name="menu_id" value="<?php echo (int)$menu['id']; ?>"><input type="hidden" name="item_id" value="<?php echo (int)$item['id']; ?>"><input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
+                            <button type="submit" class="w-9 h-9 rounded-lg border border-borderCard text-textSec hover:text-brandRed" aria-label="Alterar status"><i class="fa-solid fa-power-off"></i></button>
+                        </form>
+                        <form method="POST" onsubmit="return confirm('Excluir este prato?');">
+                            <input type="hidden" name="action" value="delete_item"><input type="hidden" name="menu_id" value="<?php echo (int)$menu['id']; ?>"><input type="hidden" name="item_id" value="<?php echo (int)$item['id']; ?>"><input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($csrf_token); ?>">
+                            <button type="submit" class="w-9 h-9 rounded-lg border border-borderCard text-textSec hover:text-brandRed" aria-label="Excluir prato"><i class="fa-solid fa-trash"></i></button>
+                        </form>
+                    </div>
+                </article>
+            <?php endforeach; ?>
+        </div>
+    <?php endif; ?>
+</section>
+<?php require VIEWS_PATH . '/admin-contratante/_panel-end.php'; ?>
