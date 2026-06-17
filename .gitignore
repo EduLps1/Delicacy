@@ -2,3 +2,8 @@
 .env
 
 .env
+
+# Banco de dados sensivel
+database/schema.sql
+delicacy_schema.sql
+*.sql

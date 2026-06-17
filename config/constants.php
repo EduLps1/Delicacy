@@ -32,6 +32,7 @@ define('COMMISSION_HYBRID', 'hybrid');
 define('PLAN_BASIC', 'basic');
 define('PLAN_PREMIUM', 'premium');
 define('PLAN_CUSTOM', 'custom');
+define('PLAN_TEST', 'test');
 
 // =============================================
 // CONSTANTES DE CARDÁPIO

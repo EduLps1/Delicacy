@@ -64,6 +64,14 @@ require VIEWS_PATH . '/admin-contratante/_panel-start.php';
     <div class="rounded-xl border border-borderCard bg-bgCard px-4 py-3 text-xs"><?php echo htmlspecialchars($message['text']); ?></div>
 <?php endif; ?>
 
+<section id="digitalTestOrders" class="hidden bg-bgCard rounded-2xl border border-borderCard p-5 space-y-4">
+    <div>
+        <h2 class="text-sm font-bold">Pedidos teste do cardápio digital</h2>
+        <p class="text-xs text-textSec mt-1">Pedidos finalizados com pagamento Teste aparecem aqui para validar o fluxo antes da integração com o gateway.</p>
+    </div>
+    <div id="digitalTestOrdersGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4"></div>
+</section>
+
 <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
     <article class="bg-bgCard rounded-2xl p-5 border border-borderCard"><span class="text-xs text-textSec">Pendentes</span><p class="mt-2 text-2xl font-bold text-brandRed"><?php echo (int)$stats['pending']; ?></p></article>
     <article class="bg-bgCard rounded-2xl p-5 border border-borderCard"><span class="text-xs text-textSec">Pedidos hoje</span><p class="mt-2 text-2xl font-bold"><?php echo (int)$stats['today_orders']; ?></p></article>
@@ -121,4 +129,62 @@ require VIEWS_PATH . '/admin-contratante/_panel-start.php';
         <?php endfor; ?>
     </nav>
 <?php endif; ?>
+<script>
+(function () {
+    const wrapper = document.getElementById('digitalTestOrders');
+    const grid = document.getElementById('digitalTestOrdersGrid');
+    if (!wrapper || !grid) return;
+
+    function readOrders() {
+        const rows = [];
+        Object.keys(localStorage).forEach(key => {
+            if (!key.startsWith('delicacy_cart_') || !key.endsWith('_orders')) return;
+            try {
+                const orders = JSON.parse(localStorage.getItem(key) || '[]');
+                orders.forEach((order, index) => rows.push({ key, index, order }));
+            } catch (error) {}
+        });
+        return rows;
+    }
+
+    function saveStatus(key, index, status) {
+        const orders = JSON.parse(localStorage.getItem(key) || '[]');
+        if (!orders[index]) return;
+        orders[index].status = status;
+        localStorage.setItem(key, JSON.stringify(orders));
+        render();
+    }
+
+    function statusOptions(current) {
+        return ['Em preparo', 'Saiu para entrega', 'Entregue', 'Cancelado'].map(status => {
+            return '<option value="' + status + '"' + (status === current ? ' selected' : '') + '>' + status + '</option>';
+        }).join('');
+    }
+
+    function esc(value) {
+        return String(value ?? '').replace(/[&<>"']/g, char => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#039;' }[char]));
+    }
+
+    function render() {
+        const rows = readOrders();
+        wrapper.classList.toggle('hidden', rows.length === 0);
+        grid.innerHTML = rows.map(row => {
+            const order = row.order;
+            const total = Number(order.total || 0).toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
+            const items = (order.items || []).map(item => item.quantity + 'x ' + item.title).join(', ');
+            return '<article class="bg-bgMain border border-borderCard p-4 rounded-xl space-y-3 shadow-sm">' +
+                '<div class="flex justify-between items-center text-xs"><strong>' + esc(order.id) + '</strong><span class="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-500">' + esc(order.status || 'Em preparo') + '</span></div>' +
+                '<p class="text-xs font-medium">Cliente teste</p>' +
+                '<p class="text-[11px] text-textSec">' + esc(items || 'Pedido teste') + ' - ' + total + '</p>' +
+                '<select class="w-full bg-bgCard text-textSec text-[11px] border border-borderCard rounded-lg px-2 py-2 outline-none" data-key="' + esc(row.key) + '" data-index="' + row.index + '">' + statusOptions(order.status || 'Em preparo') + '</select>' +
+            '</article>';
+        }).join('');
+        grid.querySelectorAll('select').forEach(select => {
+            select.addEventListener('change', () => saveStatus(select.dataset.key, Number(select.dataset.index), select.value));
+        });
+    }
+
+    render();
+})();
+</script>
 <?php require VIEWS_PATH . '/admin-contratante/_panel-end.php'; ?>

@@ -32,6 +32,61 @@ class Restaurant
     }
 
     /**
+     * Garante um restaurante técnico para contas em experimentação.
+     */
+    public function ensureTestRestaurantForUser($userId, $ownerName = 'Teste')
+    {
+        $this->ensureTestPlanTypeSupport();
+
+        $existing = $this->findByUserId($userId);
+        if ($existing) {
+            if (($existing['plan_type'] ?? '') !== PLAN_TEST) {
+                $this->update($existing['id'], [
+                    'plan_type' => PLAN_TEST,
+                    'commission_type' => COMMISSION_PLAN_ONLY,
+                    'active_commission_rate' => 0.00,
+                ]);
+                return $this->findByUserId($userId);
+            }
+
+            return $existing;
+        }
+
+        $restaurantName = trim((string)$ownerName) ?: 'Teste';
+        $restaurantId = $this->create([
+            'user_id' => (int)$userId,
+            'name' => $restaurantName,
+            'description' => 'Restaurante de teste criado automaticamente para experimentação da plataforma.',
+            'cnpj' => $this->buildTestCnpj((int)$userId),
+            'phone' => null,
+            'email' => null,
+            'commission_type' => COMMISSION_PLAN_ONLY,
+            'commission_rate' => 0.00,
+            'plan_type' => PLAN_TEST,
+        ]);
+
+        return $this->findById($restaurantId);
+    }
+
+    private function buildTestCnpj($userId)
+    {
+        return '99' . str_pad((string)$userId, 12, '0', STR_PAD_LEFT);
+    }
+
+    private function ensureTestPlanTypeSupport()
+    {
+        static $checked = false;
+        if ($checked) {
+            return;
+        }
+
+        $checked = true;
+        Database::getInstance()->execute(
+            "ALTER TABLE restaurants MODIFY plan_type ENUM('basic', 'premium', 'custom', 'test') NOT NULL DEFAULT 'basic'"
+        );
+    }
+
+    /**
      * Verifica se CNPJ já existe
      */
     public function cnpjExists($cnpj, $excludeId = null)

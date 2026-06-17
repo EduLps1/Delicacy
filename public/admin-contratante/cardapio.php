@@ -15,6 +15,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         case 'delete':
             $controller->deleteMenu();
             break;
+        case 'secure_delete':
+            $controller->secureDeleteMenu();
+            break;
+        case 'quick_update':
+            $controller->quickUpdateMenu();
+            break;
         case 'toggle_publish':
             $controller->togglePublish();
             break;
