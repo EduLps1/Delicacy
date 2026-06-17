@@ -8,8 +8,11 @@ $adminPreview = !empty($adminPreview);
 $user = getAuthUser() ?: ['name' => 'Contratante', 'email' => ''];
 $displayName = $restaurant['name'] ?? $user['name'] ?? 'Contratante';
 $displayEmail = $restaurant['email'] ?? $user['email'] ?? '';
+$accountName = $user['name'] ?? $displayName;
+$accountEmail = $user['email'] ?? $displayEmail;
 $cleanInitials = preg_replace('/[^A-Za-z0-9]/', '', $displayName);
 $initials = strtoupper(substr($cleanInitials, 0, 2) ?: 'CT');
+$accountInitials = strtoupper(substr(preg_replace('/[^A-Za-z0-9]/', '', $accountName), 0, 2) ?: $initials);
 $restaurantId = (int)($restaurant['id'] ?? 0);
 
 $stats = $contractorStats ?? [
@@ -32,7 +35,7 @@ if (!isset($periodLabels[$selectedPeriod])) {
     $selectedPeriod = 30;
 }
 
-$allowedSections = ['dashboard', 'clientes', 'fidelidade', 'metricas'];
+$allowedSections = ['dashboard', 'clientes', 'fidelidade', 'metricas', 'comingsoon'];
 $activeSection = $_GET['section'] ?? 'dashboard';
 if (!in_array($activeSection, $allowedSections, true)) {
     $activeSection = 'dashboard';
@@ -63,7 +66,7 @@ foreach ($series as $row) {
 }
 ?>
 <!DOCTYPE html>
-<html lang="pt-BR" class="dark">
+<html lang="pt-BR" class="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -71,8 +74,17 @@ foreach ($series as $row) {
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/admin-contratante.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+        (function () {
+            var themeKey = 'delicacy-contractor-theme';
+            var savedTheme = window.localStorage.getItem(themeKey);
+            var theme = savedTheme === 'dark' || savedTheme === 'light' ? savedTheme : 'light';
+            document.documentElement.classList.remove('dark', 'light');
+            document.documentElement.classList.add(theme);
+        }());
+
         tailwind.config = {
             theme: {
                 extend: {
@@ -153,7 +165,7 @@ foreach ($series as $row) {
                 <a href="<?php echo BASE_URL; ?>/admin-contratante/pedidos.php" class="nav-item-hover nav-link w-full group flex items-center px-4 py-2.5 rounded-xl font-medium transition-all border border-transparent">
                     <i class="fa-solid fa-bell-concierge w-5 mr-3 opacity-60 shrink-0"></i><span class="sidebar-text">Pedidos</span>
                 </a>
-                <a href="<?php echo BASE_URL; ?>/admin-contratante/cardapio.php" class="nav-item-hover nav-link w-full group flex items-center px-4 py-2.5 rounded-xl font-medium transition-all border border-transparent">
+                <a href="<?php echo BASE_URL; ?>/admin-contratante/cardapios.php" class="nav-item-hover nav-link w-full group flex items-center px-4 py-2.5 rounded-xl font-medium transition-all border border-transparent">
                     <i class="fa-solid fa-kitchen-set w-5 mr-3 opacity-60 shrink-0"></i><span class="sidebar-text">Cardápios</span>
                 </a>
                 <a href="<?php echo htmlspecialchars($sectionUrl('clientes')); ?>" class="nav-link <?php echo $activeSection === 'clientes' ? 'nav-item-active' : 'nav-item-hover'; ?> w-full group flex items-center px-4 py-2.5 rounded-xl font-medium transition-all border <?php echo $activeSection === 'clientes' ? 'border-borderCard' : 'border-transparent'; ?>">
@@ -188,11 +200,31 @@ foreach ($series as $row) {
                 <i class="fa-solid fa-magnifying-glass text-textSec text-xs"></i>
                 <input type="text" placeholder="Pesquisar pedidos, pratos, clientes..." class="bg-transparent border-none outline-none ml-3 w-full text-xs text-textMain">
             </div>
-            <div class="flex items-center ml-auto gap-4 lg:gap-6">
+            <div class="contractor-account flex items-center ml-auto gap-4 lg:gap-6">
                 <div id="storeStatus" class="hidden sm:inline-flex items-center gap-2 h-8 px-3 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 text-xs font-bold">
                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Loja Aberta
                 </div>
-                <div class="flex items-center gap-3">
+                <?php if ($adminPreview): ?>
+                    <a href="<?php echo BASE_URL; ?>/admin-delicacy/restaurants.php" class="text-xs text-textSec hover:text-brandRed transition-colors">Voltar</a>
+                <?php else: ?>
+                    <details class="contractor-user-menu">
+                        <summary class="contractor-user-trigger">
+                            <span class="w-8 h-8 rounded-full bg-brandRed flex items-center justify-center text-white font-bold text-xs"><?php echo htmlspecialchars($accountInitials); ?></span>
+                            <span class="hidden lg:block">
+                                <strong class="text-xs font-semibold leading-none block"><?php echo htmlspecialchars($accountName); ?></strong>
+                                <small class="text-[10px] text-textSec mt-1 uppercase tracking-widest block">Admin Contratante</small>
+                            </span>
+                        </summary>
+                        <div class="contractor-user-dropdown">
+                            <div class="contractor-user-dropdown-head">
+                                <strong><?php echo htmlspecialchars($accountName); ?></strong>
+                                <span><?php echo htmlspecialchars($accountEmail); ?></span>
+                            </div>
+                            <a class="contractor-logout" href="<?php echo BASE_URL; ?>/logout.php"><span aria-hidden="true">&#10132;</span> Sair</a>
+                        </div>
+                    </details>
+                <?php endif; ?>
+                <div class="legacy-profile flex items-center gap-3">
                     <div class="w-8 h-8 rounded-full bg-brandRed flex items-center justify-center text-white font-bold text-xs"><?php echo htmlspecialchars($initials); ?></div>
                     <div class="hidden lg:block">
                         <p class="text-xs font-medium leading-none"><?php echo htmlspecialchars($displayName); ?></p>
@@ -256,6 +288,13 @@ foreach ($series as $row) {
                         <p class="text-[11px] text-textSec mt-2">Após comissão de <?php echo htmlspecialchars($restaurant['active_commission_rate'] ?? 0); ?>%</p>
                     </article>
                 </div>
+                <section id="contractorTestMetricsDashboard" class="hidden bg-bgCard rounded-2xl border border-borderCard p-5 space-y-4">
+                    <div>
+                        <h2 class="text-sm font-bold">Métricas de teste do cardápio digital</h2>
+                        <p class="text-xs text-textSec mt-1">Pedidos finalizados com pagamento Teste entram aqui para validar a saúde da operação.</p>
+                    </div>
+                    <div id="contractorTestMetricsGrid" class="grid grid-cols-1 sm:grid-cols-3 gap-4"></div>
+                </section>
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <article class="bg-bgCard rounded-2xl p-6 border border-borderCard lg:col-span-2 flex flex-col">
                         <h2 class="text-sm font-bold mb-4">Movimento do período</h2>
@@ -277,6 +316,13 @@ foreach ($series as $row) {
 
             <section id="clientes" class="page <?php echo $activeSection === 'clientes' ? 'active' : ''; ?> space-y-8">
                 <div><h1 class="text-2xl font-bold tracking-tight">Base de Clientes</h1><p class="text-xs text-textSec mt-1">Histórico de compras, recorrência e engajamento em fidelidade.</p></div>
+                <section id="contractorTestClients" class="hidden bg-bgCard rounded-2xl border border-borderCard p-5 space-y-4">
+                    <div>
+                        <h2 class="text-sm font-bold">Clientes teste</h2>
+                        <p class="text-xs text-textSec mt-1">Clientes salvos na aba Conta do cardápio digital para validação do fluxo.</p>
+                    </div>
+                    <div id="contractorTestClientsGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+                </section>
                 <div class="bg-bgCard rounded-2xl border border-borderCard p-10 text-center">
                     <i class="fa-solid fa-user-group text-2xl text-brandRed mb-4"></i>
                     <h2 class="text-sm font-bold">Módulo de clientes em preparação</h2>
@@ -285,28 +331,68 @@ foreach ($series as $row) {
             </section>
 
             <section id="fidelidade" class="page <?php echo $activeSection === 'fidelidade' ? 'active' : ''; ?> space-y-8">
-                <div><h1 class="text-2xl font-bold tracking-tight">Programa de Fidelidade</h1><p class="text-xs text-textSec mt-1">Configure regras de benefícios e retenção de clientes.</p></div>
-                <div class="bg-bgCard rounded-2xl border border-borderCard p-10 flex flex-col items-center justify-center text-center">
-                    <div class="w-12 h-12 rounded-2xl bg-brandRed/10 text-brandRed flex items-center justify-center mb-4 text-xl"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
-                    <h2 class="text-lg font-bold">Personalização de Programa e Recompensas</h2>
-                    <p class="text-xs text-textSec mt-2 max-w-sm">Módulo avançado de fidelidade sob demanda. Esta funcionalidade será integrada nas próximas sprints.</p>
-                    <span class="mt-4 px-3 py-1 text-[10px] font-bold tracking-widest uppercase rounded-full bg-brandRed/10 text-brandRed border border-brandRed/20">Coming Soon</span>
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div>
+                        <h1 class="text-2xl font-bold tracking-tight text-textMain">Programa de Fidelidade</h1>
+                        <p class="text-xs text-textSec mt-1">Configure as regras de ac&uacute;mulo de benef&iacute;cios e reten&ccedil;&atilde;o de receita recorrente.</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <a href="<?php echo htmlspecialchars($sectionUrl('comingsoon')); ?>" class="px-4 py-2.5 rounded-xl text-xs font-semibold bg-bgCard text-textMain border border-borderCard hover:bg-bgMain transition-all">Personalizar</a>
+                        <button type="button" class="px-4 py-2.5 rounded-xl text-xs font-semibold bg-brandRed text-white shadow-md">Salvar regras</button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="bg-bgCard rounded-2xl p-6 border border-borderCard lg:col-span-2 space-y-4">
+                        <div class="flex justify-between items-center pb-2 border-b border-borderCard/20">
+                            <h3 class="text-sm font-bold text-textMain">Regras operacionais</h3>
+                            <span class="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 font-mono font-bold text-[10px]">Ativo</span>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <label class="flex flex-col gap-1.5"><span class="text-xs font-bold text-textMain">Tipo do Programa</span><select class="bg-bgMain text-xs border border-borderCard rounded-xl px-3 py-2 outline-none"><option>Pontos por valor gasto</option><option>Contagem de pedidos</option></select></label>
+                            <label class="flex flex-col gap-1.5"><span class="text-xs font-bold text-textMain">Fator de convers&atilde;o (R$ 1,00)</span><input type="text" value="1 ponto" class="bg-bgMain text-xs border border-borderCard rounded-xl px-3 py-2 outline-none"></label>
+                            <label class="flex flex-col gap-1.5"><span class="text-xs font-bold text-textMain">Pontos para resgate</span><input type="text" value="100 pontos" class="bg-bgMain text-xs border border-borderCard rounded-xl px-3 py-2 outline-none"></label>
+                            <label class="flex flex-col gap-1.5"><span class="text-xs font-bold text-textMain">Benef&iacute;cio dispon&iacute;vel</span><input type="text" value="R$ 10,00 de desconto em massas" class="bg-bgMain text-xs border border-borderCard rounded-xl px-3 py-2 outline-none"></label>
+                        </div>
+                    </div>
+                    <div class="bg-bgCard rounded-2xl p-6 border border-borderCard flex flex-col justify-between">
+                        <h3 class="text-sm font-bold text-textMain mb-4">Resumo do Impacto</h3>
+                        <div class="space-y-4 flex-1 flex flex-col justify-center text-xs">
+                            <div class="flex justify-between pb-2 border-b border-borderCard/20"><span class="text-textSec">Clientes participantes</span><span class="font-bold">189 ativos</span></div>
+                            <div class="flex justify-between pb-2 border-b border-borderCard/20"><span class="text-textSec">Resgates efetuados</span><span class="font-bold">42 resgates</span></div>
+                            <div class="flex justify-between pb-2 border-b border-borderCard/20"><span class="text-textSec">Pedidos via fidelidade</span><span class="font-bold">318 transa&ccedil;&otilde;es</span></div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
-            <section id="metricas" class="page <?php echo $activeSection === 'metricas' ? 'active' : ''; ?> space-y-8">
+            <section id="comingsoon" class="page <?php echo $activeSection === 'comingsoon' ? 'active' : ''; ?> space-y-8">
+                <div class="bg-bgCard rounded-2xl border border-borderCard p-12 flex flex-col items-center justify-center min-h-[320px] relative overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-r from-transparent via-bgMain/5 to-transparent animate-pulse pointer-events-none"></div>
+                    <div class="w-12 h-12 rounded-2xl bg-brandRed/10 text-brandRed flex items-center justify-center mb-4 text-xl"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                    <h2 class="text-lg font-bold text-textMain opacity-90">Personaliza&ccedil;&atilde;o de Programa e Recompensas</h2>
+                    <p class="text-xs text-textSec mt-1 text-center max-w-sm">M&oacute;dulo avan&ccedil;ado de fidelidade sob demanda. Esta funcionalidade ser&aacute; integrada nas pr&oacute;ximas sprints de desenvolvimento.</p>
+                    <span class="mt-4 px-3 py-1 text-[10px] font-bold tracking-widest uppercase rounded-full bg-brandRed/10 text-brandRed border border-brandRed/20">Coming Soon</span>
+                    <a href="<?php echo htmlspecialchars($sectionUrl('fidelidade')); ?>" class="mt-6 text-xs text-textSec hover:text-textMain border-b border-borderCard pb-0.5">&lsaquo; Voltar para Fidelidade</a>
+                </div>
+            </section>            <section id="metricas" class="page <?php echo $activeSection === 'metricas' ? 'active' : ''; ?> space-y-8">
                 <div><h1 class="text-2xl font-bold tracking-tight">Métricas Analíticas</h1><p class="text-xs text-textSec mt-1">Visão comparativa de faturamento e volume de pedidos.</p></div>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
                     <div class="bg-bgCard rounded-2xl p-6 border border-borderCard"><span class="text-xs text-textSec block mb-1">Receita bruta</span><h3 class="text-xl font-bold"><?php echo formatCurrency($stats['revenue']); ?></h3></div>
                     <div class="bg-bgCard rounded-2xl p-6 border border-borderCard"><span class="text-xs text-textSec block mb-1">Pedidos consolidados</span><h3 class="text-xl font-bold"><?php echo number_format((int)$stats['orders'], 0, ',', '.'); ?></h3></div>
                     <div class="bg-bgCard rounded-2xl p-6 border border-borderCard"><span class="text-xs text-textSec block mb-1">Ticket médio</span><h3 class="text-xl font-bold"><?php echo formatCurrency($stats['average_ticket']); ?></h3></div>
                 </div>
+                <section id="contractorTestMetricsPage" class="hidden bg-bgCard rounded-2xl border border-borderCard p-5 space-y-4">
+                    <div>
+                        <h2 class="text-sm font-bold">Métricas teste integradas</h2>
+                        <p class="text-xs text-textSec mt-1">Dados gerados pelos checkouts de teste do cardápio digital.</p>
+                    </div>
+                    <div id="contractorTestMetricsPageGrid" class="grid grid-cols-1 sm:grid-cols-4 gap-4"></div>
+                </section>
                 <article class="bg-bgCard rounded-2xl p-6 border border-borderCard">
                     <h2 class="text-sm font-bold mb-4">Evolução de faturamento</h2>
                     <div class="relative min-h-[300px]"><canvas id="monthlyRevenueChart"></canvas></div>
                 </article>
-            </section>
-        </main>
+            </section>        </main>
     </div>
 
     <script>
@@ -372,8 +458,10 @@ foreach ($series as $row) {
                 options: chartOptions()
             });
         }
-        themeToggleBtn.addEventListener('click', () => {
-            const useLight = htmlElement.classList.contains('dark');
+        const themeKey = 'delicacy-contractor-theme';
+
+        function setContractorTheme(theme, persist) {
+            const useLight = theme === 'light';
             htmlElement.classList.toggle('dark', !useLight);
             htmlElement.classList.toggle('light', useLight);
             themeToggleText.innerHTML = useLight
@@ -381,9 +469,78 @@ foreach ($series as $row) {
                 : '<i class="fa-solid fa-moon mr-2"></i> Dark Mode';
             themeToggleIcon.classList.toggle('fa-toggle-on', !useLight);
             themeToggleIcon.classList.toggle('fa-toggle-off', useLight);
+            if (persist) {
+                window.localStorage.setItem(themeKey, theme);
+            }
             if (dayMovementChart) dayMovementChart.update();
             if (monthlyRevenueChart) monthlyRevenueChart.update();
+        }
+
+        const savedTheme = window.localStorage.getItem(themeKey);
+        setContractorTheme(savedTheme === 'dark' || savedTheme === 'light' ? savedTheme : 'light', false);
+
+        themeToggleBtn.addEventListener('click', () => {
+            setContractorTheme(htmlElement.classList.contains('dark') ? 'light' : 'dark', true);
         });
+
+        function readDigitalTestData() {
+            const orders = [];
+            const customers = [];
+            Object.keys(localStorage).forEach(key => {
+                try {
+                    if (key.startsWith('delicacy_cart_') && key.endsWith('_orders')) {
+                        JSON.parse(localStorage.getItem(key) || '[]').forEach(order => orders.push(order));
+                    }
+                    if (key.startsWith('delicacy_cart_') && key.endsWith('_customer')) {
+                        const customer = JSON.parse(localStorage.getItem(key) || '{}');
+                        if (customer.name || customer.email || customer.phone || customer.cpf) customers.push(customer);
+                    }
+                } catch (error) {}
+            });
+            return { orders, customers };
+        }
+
+        function moneyTest(value) {
+            return Number(value || 0).toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
+        }
+
+        function renderMetricCards(target, data, detailed) {
+            if (!target) return;
+            const revenue = data.orders.reduce((sum, order) => sum + Number(order.total || 0), 0);
+            const orders = data.orders.length;
+            const ticket = orders ? revenue / orders : 0;
+            const commission = revenue * 0.03;
+            const cards = [
+                ['Pedidos teste', orders],
+                ['Receita teste', moneyTest(revenue)],
+                ['Ticket médio teste', moneyTest(ticket)]
+            ];
+            if (detailed) cards.push(['Comissão teste', moneyTest(commission)]);
+            target.innerHTML = cards.map(card => '<article class="bg-bgMain rounded-xl border border-borderCard p-4"><span class="text-xs text-textSec block mb-1">' + card[0] + '</span><strong class="text-lg">' + card[1] + '</strong></article>').join('');
+        }
+
+        function renderDigitalTestPanels() {
+            const data = readDigitalTestData();
+            const dashboardBox = document.getElementById('contractorTestMetricsDashboard');
+            const dashboardGrid = document.getElementById('contractorTestMetricsGrid');
+            const metricsBox = document.getElementById('contractorTestMetricsPage');
+            const metricsGrid = document.getElementById('contractorTestMetricsPageGrid');
+            const clientsBox = document.getElementById('contractorTestClients');
+            const clientsGrid = document.getElementById('contractorTestClientsGrid');
+
+            if (data.orders.length) {
+                dashboardBox?.classList.remove('hidden');
+                metricsBox?.classList.remove('hidden');
+                renderMetricCards(dashboardGrid, data, false);
+                renderMetricCards(metricsGrid, data, true);
+            }
+            if (data.customers.length && clientsBox && clientsGrid) {
+                clientsBox.classList.remove('hidden');
+                clientsGrid.innerHTML = data.customers.map(customer => '<article class="bg-bgMain rounded-xl border border-borderCard p-4"><strong class="text-sm">' + (customer.name || 'Cliente teste') + '</strong><p class="text-xs text-textSec mt-1">' + (customer.email || 'Sem e-mail') + '</p><p class="text-xs text-textSec mt-1">' + (customer.phone || 'Sem celular') + '</p><p class="text-[11px] text-textSec mt-3">CPF: ' + (customer.cpf || 'Nao informado') + '</p></article>').join('');
+            }
+        }
+
+        renderDigitalTestPanels();
     </script>
 </body>
 </html>

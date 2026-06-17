@@ -11,5 +11,5 @@ $controller = new MenuController();
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $controller->createMenu();
 } else {
-    $controller->showCreateForm();
+    $controller->showVisualCreate();
 }

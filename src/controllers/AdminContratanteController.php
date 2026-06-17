@@ -29,6 +29,9 @@ class AdminContratanteController {
     public function showDashboard() {
         $userId = getAuthUserId();
         $restaurant = $this->restaurantModel->findByUserId($userId);
+        if (!$restaurant) {
+            $restaurant = $this->restaurantModel->ensureTestRestaurantForUser($userId, 'Teste');
+        }
 
         $periodDays = (int)($_GET['period'] ?? 30);
         if (!in_array($periodDays, [7, 30, 90, 365], true)) {
@@ -162,7 +165,14 @@ class AdminContratanteController {
         $restaurant = $this->restaurantModel->findByUserId($userId);
 
         if (!$restaurant) {
-            redirectWithMessage(BASE_URL . '/admin-contratante/', 'Restaurante nao encontrado', 'error');
+            $user = getAuthUser() ?: ['name' => 'Restaurante', 'email' => ''];
+            $restaurant = [
+                'id' => 0,
+                'name' => $user['name'] ?? 'Restaurante',
+                'description' => '',
+                'phone' => '',
+                'email' => $user['email'] ?? ''
+            ];
         }
 
         $csrf_token = generateCSRFToken();
@@ -187,7 +197,7 @@ class AdminContratanteController {
             $restaurant = $this->restaurantModel->findByUserId(getAuthUserId());
 
             if (!$restaurant) {
-                redirectWithMessage(BASE_URL . '/admin-contratante/', 'Restaurante nao encontrado', 'error');
+                redirectWithMessage(BASE_URL . '/admin-contratante/editar-restaurante.php', 'Restaurante nao encontrado', 'error');
             }
 
             $data = [];

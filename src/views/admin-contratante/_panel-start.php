@@ -1,102 +1,86 @@
 <?php
 $panelTitle = $panelTitle ?? 'Painel do Restaurante';
 $panelActive = $panelActive ?? '';
-$user = getAuthUser() ?: ['name' => 'Contratante'];
+$user = getAuthUser() ?: ['name' => 'Contratante', 'email' => ''];
 $panelName = $restaurant['name'] ?? $user['name'] ?? 'Contratante';
-$cleanInitials = preg_replace('/[^A-Za-z0-9]/', '', $panelName);
+$userName = $user['name'] ?? $panelName;
+$userEmail = $user['email'] ?? '';
+$cleanInitials = preg_replace('/[^A-Za-z0-9]/', '', $userName);
 $panelInitials = strtoupper(substr($cleanInitials, 0, 2) ?: 'CT');
 $navClass = function ($key) use ($panelActive) {
-    return $panelActive === $key
-        ? 'nav-item-active border-brandRed text-brandRed'
-        : 'nav-item-hover border-transparent text-textSec';
+    return $panelActive === $key ? 'active' : '';
 };
 ?>
 <!DOCTYPE html>
-<html lang="pt-BR" class="dark">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($panelTitle); ?> - Delicacy</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/admin-delicacy.css">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/admin-contratante.css">
     <script>
         tailwind.config = { theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'] }, colors: {
-            bgMain: 'var(--bg-main)', bgCard: 'var(--bg-card)', bgSidebar: 'var(--bg-sidebar)',
-            bgHeader: 'var(--bg-header)', borderCard: 'var(--border-card)', textMain: 'var(--text-main)',
-            textSec: 'var(--text-sec)', brandRed: '#EF4444'
+            bgMain: 'var(--ad-bg)', bgCard: 'var(--ad-surface)', bgSidebar: 'var(--ad-sidebar)',
+            bgHeader: 'var(--ad-topbar)', borderCard: 'var(--ad-line)', textMain: 'var(--ad-text)',
+            textSec: 'var(--ad-muted)', brandRed: '#F33C43'
         }}}};
     </script>
-    <style>
-        :root.dark { --bg-main:#000; --bg-card:#0b0b0f; --bg-sidebar:#0b0b0f; --bg-header:#0b0b0f; --border-card:#18181c; --text-main:#fff; --text-sec:#71717a; }
-        :root.light { --bg-main:#fff; --bg-card:#fff; --bg-sidebar:#f8f9fa; --bg-header:#f1f3f5; --border-card:#e4e4e7; --text-main:#000; --text-sec:#71717a; }
-        :root.dark .nav-item-active { background:#000; color:#ef4444; border-color:#ef4444; }
-        :root.light .nav-item-active { background:#000; color:#fff; border-color:#000; }
-        :root.dark .nav-item-hover:hover { color:#ef4444; }
-        :root.light .nav-item-hover:hover { background:rgba(0,0,0,.04); color:#000; }
-        .sidebar-collapsed #sidebar { width:80px; }
-        .sidebar-collapsed #sidebar .sidebar-text { display:none; }
-        .sidebar-collapsed #sidebar .nav-link { justify-content:center; padding-left:0; padding-right:0; }
-        .sidebar-collapsed #sidebar .nav-link i { margin-right:0; }
-        ::-webkit-scrollbar { width:5px; height:5px; }
-        ::-webkit-scrollbar-track { background:var(--bg-main); }
-        ::-webkit-scrollbar-thumb { background:var(--border-card); border-radius:10px; }
-    </style>
 </head>
-<body class="bg-bgMain text-textMain font-sans antialiased overflow-hidden flex h-screen transition-colors duration-200">
-    <aside id="sidebar" class="w-64 bg-bgSidebar text-textSec flex flex-col hidden md:flex transition-all duration-200 border-r border-borderCard relative z-30">
-        <button type="button" onclick="toggleSidebar()" class="absolute top-1/2 -right-3.5 -translate-y-1/2 w-7 h-16 border border-borderCard border-l-0 rounded-r-full bg-bgSidebar text-textMain flex items-center justify-center text-sm font-mono shadow-md z-40 hover:bg-brandRed hover:text-white transition-colors" aria-label="Recolher menu">
-            <span id="toggleArrow">&lsaquo;</span>
+<body class="platform-admin contractor-admin" data-theme="light" data-default-theme="light" data-theme-key="delicacy-contractor-theme">
+    <aside class="ad-sidebar">
+        <button type="button" class="contractor-collapse-toggle" aria-label="Recolher menu" onclick="document.body.classList.toggle('sidebar-collapsed'); this.querySelector('span').innerHTML = document.body.classList.contains('sidebar-collapsed') ? '&rsaquo;' : '&lsaquo;';">
+            <span>&lsaquo;</span>
         </button>
-        <div class="h-16 flex items-center px-6 gap-3 border-b border-borderCard shrink-0">
-            <div class="w-8 h-8 rounded-xl bg-brandRed flex items-center justify-center shrink-0"><i class="fa-solid fa-utensils text-white text-sm"></i></div>
-            <div class="sidebar-text min-w-0">
-                <span class="text-sm font-bold tracking-tight text-textMain block leading-none truncate"><?php echo htmlspecialchars($panelName); ?></span>
-                <span class="text-[10px] text-textSec font-mono uppercase tracking-wider">Restaurante Admin</span>
-            </div>
-        </div>
-        <nav class="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
-            <a href="<?php echo BASE_URL; ?>/admin-contratante/" class="nav-link <?php echo $navClass('dashboard'); ?> w-full flex items-center px-4 py-2.5 rounded-xl font-medium transition-all border">
-                <i class="fa-solid fa-chart-pie w-5 mr-3 shrink-0"></i><span class="sidebar-text">Dashboard</span>
-            </a>
-            <a href="<?php echo BASE_URL; ?>/admin-contratante/pedidos.php" class="nav-link <?php echo $navClass('pedidos'); ?> w-full flex items-center px-4 py-2.5 rounded-xl font-medium transition-all border">
-                <i class="fa-solid fa-bell-concierge w-5 mr-3 shrink-0"></i><span class="sidebar-text">Pedidos</span>
-            </a>
-            <a href="<?php echo BASE_URL; ?>/admin-contratante/cardapio.php" class="nav-link <?php echo $navClass('cardapios'); ?> w-full flex items-center px-4 py-2.5 rounded-xl font-medium transition-all border">
-                <i class="fa-solid fa-kitchen-set w-5 mr-3 shrink-0"></i><span class="sidebar-text">Cardápios</span>
-            </a>
-            <a href="<?php echo BASE_URL; ?>/admin-contratante/?section=clientes" class="nav-link nav-item-hover border-transparent text-textSec w-full flex items-center px-4 py-2.5 rounded-xl font-medium transition-all border">
-                <i class="fa-solid fa-user-group w-5 mr-3 shrink-0"></i><span class="sidebar-text">Clientes</span>
-            </a>
-            <a href="<?php echo BASE_URL; ?>/admin-contratante/?section=fidelidade" class="nav-link nav-item-hover border-transparent text-textSec w-full flex items-center px-4 py-2.5 rounded-xl font-medium transition-all border">
-                <i class="fa-solid fa-award w-5 mr-3 shrink-0"></i><span class="sidebar-text">Fidelidade</span>
-            </a>
-            <a href="<?php echo BASE_URL; ?>/admin-contratante/?section=metricas" class="nav-link nav-item-hover border-transparent text-textSec w-full flex items-center px-4 py-2.5 rounded-xl font-medium transition-all border">
-                <i class="fa-solid fa-chart-line w-5 mr-3 shrink-0"></i><span class="sidebar-text">Métricas</span>
-            </a>
-            <a href="<?php echo BASE_URL; ?>/admin-contratante/editar-restaurante.php" class="nav-link <?php echo $navClass('config'); ?> w-full flex items-center px-4 py-2.5 rounded-xl font-medium transition-all border">
-                <i class="fa-solid fa-sliders w-5 mr-3 shrink-0"></i><span class="sidebar-text">Configurações</span>
-            </a>
+        <a class="ad-brand" href="<?php echo BASE_URL; ?>/admin-contratante/">
+            <span class="ad-logo-box"><i class="fa-solid fa-utensils" style="color:#fff;display:grid;place-items:center;height:100%;"></i></span>
+            <span>
+                <span class="ad-brand-name"><?php echo htmlspecialchars($panelName); ?></span>
+                <span class="ad-brand-role">RESTAURANTE ADMIN</span>
+            </span>
+        </a>
+
+        <nav class="ad-nav" aria-label="Admin Contratante">
+            <a class="<?php echo $navClass('dashboard'); ?>" href="<?php echo BASE_URL; ?>/admin-contratante/"><span class="ad-menu-icon"><i class="fa-solid fa-chart-pie"></i></span><span>Dashboard</span></a>
+            <a class="<?php echo $navClass('pedidos'); ?>" href="<?php echo BASE_URL; ?>/admin-contratante/pedidos.php"><span class="ad-menu-icon"><i class="fa-solid fa-bell-concierge"></i></span><span>Pedidos</span></a>
+            <a class="<?php echo $navClass('cardapios'); ?>" href="<?php echo BASE_URL; ?>/admin-contratante/cardapios.php"><span class="ad-menu-icon"><i class="fa-solid fa-kitchen-set"></i></span><span>Cardápios</span></a>
+            <a href="<?php echo BASE_URL; ?>/admin-contratante/?section=clientes"><span class="ad-menu-icon"><i class="fa-solid fa-user-group"></i></span><span>Clientes</span></a>
+            <a href="<?php echo BASE_URL; ?>/admin-contratante/?section=fidelidade"><span class="ad-menu-icon"><i class="fa-solid fa-award"></i></span><span>Fidelidade</span></a>
+            <a href="<?php echo BASE_URL; ?>/admin-contratante/?section=metricas"><span class="ad-menu-icon"><i class="fa-solid fa-chart-line"></i></span><span>Métricas</span></a>
+            <a class="<?php echo $navClass('config'); ?>" href="<?php echo BASE_URL; ?>/admin-contratante/editar-restaurante.php"><span class="ad-menu-icon"><i class="fa-solid fa-sliders"></i></span><span>Configurações</span></a>
         </nav>
-        <div class="p-4 border-t border-borderCard shrink-0">
-            <button id="themeToggleBtn" type="button" class="flex items-center justify-between px-2 w-full text-left text-xs hover:text-textMain transition-colors">
-                <span id="themeToggleText" class="sidebar-text flex items-center"><i class="fa-solid fa-moon mr-2"></i> Dark Mode</span>
-                <i id="themeToggleIcon" class="fa-solid fa-toggle-on text-brandRed text-lg"></i>
-            </button>
+
+        <div class="ad-theme">
+            <span class="ad-theme-label"><i data-admin-theme-icon class="fa-solid fa-sun mr-2" aria-hidden="true"></i><span data-admin-theme-label>Light Mode</span></span>
+            <button class="ad-theme-toggle" type="button" data-admin-theme-toggle aria-label="Ativar modo escuro" aria-pressed="false"></button>
         </div>
     </aside>
-    <div class="flex-1 flex flex-col h-screen overflow-hidden">
-        <header class="h-16 bg-bgHeader flex items-center justify-between px-5 lg:px-10 shrink-0 border-b border-borderCard">
-            <div class="hidden sm:flex items-center bg-bgCard rounded-xl px-4 py-2 w-80 lg:w-96 border border-borderCard">
-                <i class="fa-solid fa-magnifying-glass text-textSec text-xs"></i>
-                <input type="text" placeholder="Pesquisar pedidos, pratos, clientes..." class="bg-transparent border-none outline-none ml-3 w-full text-xs text-textMain">
-            </div>
-            <div class="flex items-center ml-auto gap-4">
-                <div class="hidden sm:inline-flex items-center gap-2 h-8 px-3 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 text-xs font-bold">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Loja Aberta
+
+    <header class="ad-topbar">
+        <label class="ad-search">
+            <span class="ad-icon"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="7"/><path d="m16 16 5 5"/></svg></span>
+            <input type="search" placeholder="Pesquisar pedidos, pratos, clientes..." aria-label="Pesquisar">
+        </label>
+        <div class="ad-account">
+            <span class="ad-bell ad-icon"><svg viewBox="0 0 24 24"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></span>
+            <span class="ad-divider"></span>
+            <span class="ad-store-status"><i></i> Loja Aberta</span>
+            <details class="ad-user-menu">
+                <summary class="ad-profile ad-profile-trigger">
+                    <span class="ad-avatar"><?php echo htmlspecialchars($panelInitials); ?></span>
+                    <span><strong><?php echo htmlspecialchars($userName); ?></strong><small>ADMIN CONTRATANTE</small></span>
+                </summary>
+                <div class="ad-user-dropdown">
+                    <div class="ad-dropdown-head"><strong><?php echo htmlspecialchars($userName); ?></strong><span><?php echo htmlspecialchars($userEmail); ?></span></div>
+                    <a class="ad-logout" href="<?php echo BASE_URL; ?>/logout.php"><span aria-hidden="true">&#10132;</span> Sair</a>
                 </div>
-                <div class="w-8 h-8 rounded-full bg-brandRed flex items-center justify-center text-white font-bold text-xs"><?php echo htmlspecialchars($panelInitials); ?></div>
-                <a href="<?php echo BASE_URL; ?>/logout.php" class="text-xs text-textSec hover:text-brandRed">Sair</a>
-            </div>
-        </header>
-        <main class="flex-1 overflow-y-auto p-6 lg:p-10 space-y-8">
+            </details>
+        </div>
+    </header>
+
+    <main class="ad-main space-y-8">

@@ -33,7 +33,25 @@ class OrderController
         $restaurant = $restaurantModel->findByUserId($userId);
 
         if (!$restaurant) {
-            redirectWithMessage(BASE_URL . '/admin-contratante/', 'Cadastre um restaurante primeiro', 'warning');
+            $user = getAuthUser() ?: ['name' => 'Restaurante'];
+            $restaurant = [
+                'id' => 0,
+                'name' => $user['name'] ?? 'Restaurante'
+            ];
+            $orders = [];
+            $totalOrders = 0;
+            $totalPages = 1;
+            $stats = [
+                'pending' => 0,
+                'today_orders' => 0,
+                'today_revenue' => 0,
+                'total_orders' => 0
+            ];
+            $filters = [];
+            $csrf_token = generateCSRFToken();
+
+            require_once VIEWS_PATH . '/dashboard/orders.php';
+            return;
         }
 
         // Filtros
@@ -132,6 +150,7 @@ class OrderController
 
         $menuItemModel = new MenuItem();
         $itemsGrouped = $menuItemModel->findByMenuIdGrouped($menu['id']);
+        $editorData = $menuModel->decodeEditorData($menu['editor_data'] ?? null, $menu['name'] ?? 'Cardápio');
 
         require_once VIEWS_PATH . '/cardapio/menu.php';
     }

@@ -8,6 +8,7 @@
 require_once __DIR__ . '/../../config/config.php';
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../models/User.php';
+require_once __DIR__ . '/../models/Restaurant.php';
 
 class AuthController {
     private $userModel;
@@ -66,6 +67,10 @@ class AuthController {
             // Inicia sessão
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['user'] = $user;
+
+            if ($user['role'] === ROLE_ADMIN_RESTAURANT) {
+                (new Restaurant())->ensureTestRestaurantForUser($user['id'], 'Teste');
+            }
 
             // Registra login em admin_logs
             $this->logAdminAction($user['id'], 'login', 'users', $user['id']);
@@ -146,6 +151,8 @@ class AuthController {
                 'password' => $password,
                 'role' => ROLE_ADMIN_RESTAURANT
             ]);
+
+            (new Restaurant())->ensureTestRestaurantForUser($userId, 'Teste');
 
             redirectWithMessage(
                 BASE_URL . '/login.php',

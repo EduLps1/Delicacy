@@ -3,7 +3,8 @@
     var toggle = document.querySelector('[data-admin-theme-toggle]');
     var label = document.querySelector('[data-admin-theme-label]');
     var glyph = document.querySelector('[data-admin-theme-glyph]');
-    var themeKey = 'delicacy-admin-theme';
+    var icon = document.querySelector('[data-admin-theme-icon]');
+    var themeKey = page.dataset.themeKey || 'delicacy-admin-theme';
 
     if (!page || !toggle || !label) {
         return;
@@ -14,6 +15,9 @@
         label.textContent = theme === 'dark' ? 'Dark Mode' : 'Light Mode';
         if (glyph) {
             glyph.textContent = theme === 'dark' ? '\u263e' : '\u263c';
+        }
+        if (icon) {
+            icon.className = theme === 'dark' ? 'fa-solid fa-moon mr-2' : 'fa-solid fa-sun mr-2';
         }
         toggle.setAttribute('aria-label', theme === 'dark' ? 'Ativar modo claro' : 'Ativar modo escuro');
         toggle.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');

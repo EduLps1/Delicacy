@@ -114,6 +114,33 @@ $activeOrders = (int)($stats['active_orders'] ?? 0);
             </article>
         </section>
 
+        <section id="adminDelicacyTestMetrics" class="ad-metrics" aria-label="Indicadores de teste" style="display:none">
+            <article class="ad-card">
+                <p class="ad-card-label">Receita Teste</p>
+                <span class="ad-icon-box">T</span>
+                <p class="ad-card-value" id="adTestRevenue">R$ 0,00</p>
+                <p class="ad-card-note">Checkouts de teste do cardápio digital</p>
+            </article>
+            <article class="ad-card">
+                <p class="ad-card-label">Pedidos Teste</p>
+                <span class="ad-icon-box">#</span>
+                <p class="ad-card-value" id="adTestOrders">0</p>
+                <p class="ad-card-note">Pedidos em ambiente de validação</p>
+            </article>
+            <article class="ad-card">
+                <p class="ad-card-label">Clientes Teste</p>
+                <span class="ad-icon-box">C</span>
+                <p class="ad-card-value" id="adTestCustomers">0</p>
+                <p class="ad-card-note">Contas salvas no web app</p>
+            </article>
+            <article class="ad-card">
+                <p class="ad-card-label">Ticket Médio Teste</p>
+                <span class="ad-icon-box">R$</span>
+                <p class="ad-card-value" id="adTestTicket">R$ 0,00</p>
+                <p class="ad-card-note">Visualização auxiliar para QA</p>
+            </article>
+        </section>
+
         <section class="ad-grid" aria-label="Graficos operacionais">
             <article class="ad-chart">
                 <h2>An&aacute;lise de Performance</h2>
@@ -193,6 +220,31 @@ $activeOrders = (int)($stats['active_orders'] ?? 0);
                     chart.update();
                 });
             });
+
+            (function renderAdminTestMetrics() {
+                var orders = [];
+                var customers = [];
+                Object.keys(localStorage).forEach(function (key) {
+                    try {
+                        if (key.indexOf('delicacy_cart_') === 0 && key.slice(-7) === '_orders') {
+                            JSON.parse(localStorage.getItem(key) || '[]').forEach(function (order) { orders.push(order); });
+                        }
+                        if (key.indexOf('delicacy_cart_') === 0 && key.slice(-9) === '_customer') {
+                            var customer = JSON.parse(localStorage.getItem(key) || '{}');
+                            if (customer.name || customer.email || customer.phone || customer.cpf) customers.push(customer);
+                        }
+                    } catch (error) {}
+                });
+                if (!orders.length && !customers.length) return;
+                var revenue = orders.reduce(function (sum, order) { return sum + Number(order.total || 0); }, 0);
+                var ticket = orders.length ? revenue / orders.length : 0;
+                var money = function (value) { return Number(value || 0).toLocaleString('pt-BR', { style:'currency', currency:'BRL' }); };
+                document.getElementById('adminDelicacyTestMetrics').style.display = '';
+                document.getElementById('adTestRevenue').textContent = money(revenue);
+                document.getElementById('adTestOrders').textContent = orders.length.toLocaleString('pt-BR');
+                document.getElementById('adTestCustomers').textContent = customers.length.toLocaleString('pt-BR');
+                document.getElementById('adTestTicket').textContent = money(ticket);
+            }());
         }());
     </script>
 </body>
